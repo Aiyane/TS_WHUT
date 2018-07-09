@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import UserProfile
+from Users.models import UserProfile
 from datetime import datetime  # 导入当前时间
 
 

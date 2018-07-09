@@ -97,11 +97,15 @@ class GroupImage(models.Model):
 
 
 class LikeShip(models.Model):
-    # 点赞关系
+    # 收藏点赞关系
+    name = models.CharField(max_length=10, choices=(("like", "点赞"), ("collection", "收藏")), default="like", verbose_name="点赞/收藏")
     user = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True, verbose_name="用户名")
     image = models.ForeignKey(ImageModel, on_delete=models.SET_NULL, null=True, verbose_name="图片")
-    add_time = models.DateField(default=datetime.now, verbose_name="点赞时间")
+    add_time = models.DateField(default=datetime.now, verbose_name="收藏点赞时间")
 
     class Meta:
-        verbose_name = "点赞"
+        verbose_name = "点赞/收藏"
         verbose_name_plural = verbose_name
+    
+    def __str__(self):
+        return self.name

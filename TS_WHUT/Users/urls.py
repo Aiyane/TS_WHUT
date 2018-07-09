@@ -8,8 +8,8 @@ __author__ = 'Aiyane'
 
 
 from django.urls import path
-from .views import RegisterView
+# from .views import RegisterView
 
 urlpatterns = [
-    path('register/', RegisterView.as_view(), name='resgister'),
+    # path('register/', RegisterView.as_view(), name='resgister'),
 ]
