@@ -1,3 +1,6 @@
+"""
+数据模板
+"""
 from django.db import models
 from datetime import datetime  # 导入当前时间
 from django.contrib.auth.models import AbstractUser  # 这个model是数据库默认的user
@@ -61,19 +64,6 @@ class BannerModel(models.Model):
     def __str__(self):
         return self.title
 
-    
-class GroupImage(models.Model):
-    # 图片种类
-    name = models.CharField(verbose_name="图片分类", max_length=20)
-    add_time = models.DateField(default=datetime.now, verbose_name="添加时间")
-
-    class Meta:
-        verbose_name = "图片分类"
-        verbose_name_plural = verbose_name
-
-    def __str__(self):
-        return self.name
-
 
 class ImageModel(models.Model):
     # 图片
@@ -90,6 +80,21 @@ class ImageModel(models.Model):
     class Meta:
         verbose_name = "图片"
         verbose_name_plural = verbose_name
+
+
+class GroupImage(models.Model):
+    # 图片种类
+    name = models.CharField(verbose_name="图片分类", max_length=20)
+    add_time = models.DateField(default=datetime.now, verbose_name="添加时间")
+    image = models.ForeignKey(ImageModel, models.SET_NULL, null=True, verbose_name="图片")
+
+    class Meta:
+        verbose_name = "图片分类"
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
+
 
 class LikeShip(models.Model):
     # 点赞关系
