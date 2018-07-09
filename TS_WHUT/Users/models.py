@@ -38,15 +38,12 @@ class UserProfile(AbstractUser):
 
 class Follow(models.Model):
     # 关注关系
-    follow = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True, verbose_name="被关注者")
-    fan = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True, verbose_name="粉丝")
+    follow = models.ForeignKey(UserProfile, related_name="follow_user", on_delete=models.SET_NULL, null=True, verbose_name="被关注者")
+    fan = models.ForeignKey(UserProfile, related_name="fan_user", on_delete=models.SET_NULL, null=True, verbose_name="粉丝")
      
     class Meta:
         verbose_name = "关注关系"
         verbose_name_plural = verbose_name
-
-    def __str__(self):
-        return "follow:{},fan:{}".format(self.follow,self.fan)
 
 
 class BannerModel(models.Model):
