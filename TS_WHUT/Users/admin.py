@@ -29,7 +29,7 @@ class GroupImageAdmin(admin.ModelAdmin):
 class ImageModelAdmin(admin.ModelAdmin):
     list_display = ['if_active', 'desc', 'user', 'pattern', 'add_time']
     search_fields = ['desc']
-    list_filter = ['pattern']
+    list_filter = ['pattern', 'if_active']
 
 admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(EmailVerifyRecord, EmailVerifyRecordAdmin)
