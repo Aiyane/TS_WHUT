@@ -144,3 +144,6 @@ EMAIL_HOST_USER = "2310091880qq@sina.com"
 EMAIL_HOST_PASSWORD = "zhangzhiqiang199"
 EMAIL_USE_TLS = False
 EMAIL_FROM = "2310091880qq@sina.com"
+
+# 重载默认user
+AUTH_USER_MODEL = "users.UserProfile"
