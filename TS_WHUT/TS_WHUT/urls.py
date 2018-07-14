@@ -18,9 +18,9 @@ from django.conf.urls import url, include
 from login import views
 
 urlpatterns = [
-    url('admin/', admin.site.urls),
-    url('users/', include('Users.urls')),  # 配置用户页url
-    url('operation/', include('operation.urls')) # 配置操作页url
+    url(r'^admin/', admin.site.urls),
+    url(r'^users/$', include('Users.urls')),  # 配置用户页url
+    url(r'^operation/$', include('operation.urls')) # 配置操作页url
     url(r'^index/$', views.index),      # 主页
     url(r'^login/$', views.login),      # 登陆
     url(r'^register/$', views.register),  # 注册
