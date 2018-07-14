@@ -24,10 +24,4 @@ urlpatterns = [
     path('', Index.as_view(), name="index"),  # 主页
     path('users/', include('Users.urls')),  # 配置用户页url
     path('operation/', include('operation.urls')),  # 配置操作页url
-    url(r'^index/$', views.index),      # 主页
-    url(r'^login/$', views.login),      # 登陆
-    url(r'^register/$', views.register),  # 注册
-    url(r'^logout/$', views.logout),    # 注销
-    url(r'^captcha', include('captcha.urls')),   # 验证码
-    url(r'^confirm/$', views.user_confirm),      # 邮箱验证
 ]
