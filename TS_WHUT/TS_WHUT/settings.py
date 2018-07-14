@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'rpu-jl9iywc4*1+*q_8-z85bi8vsm)er#7y_nzgxs#ba5xy%c!'
+SECRET_KEY = '-40p78^j^w0#3j!4xt#*@mqh72h!hvu4r0!-ad$5etfxu!dq82'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'Users',
+    'operation',
     'login',       # 注册新建的app
     'captcha',     # 二维码
 ]
@@ -45,7 +47,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -79,9 +81,9 @@ WSGI_APPLICATION = 'TS_WHUT.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # 如果要使用数据库把最后改成mysql
-        'NAME': 'TS_WHUT',  # 数据库名字
+        'NAME': 'ts_whut',  # 数据库名字
         'USER': 'root',  # 数据库用户名
-        'PASSWORD': 'whutlhc1229',  # 数据库密码
+        'PASSWORD': 'zhangzhiqiang199',  # 数据库密码
         'HOST': '127.0.0.1',  # 数据库HOST, 一般127.0.0.1
         'PORT': '3306',  # 数据库端口号, mysql一般为3306
     }
@@ -129,12 +131,17 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
 
-# 设置发送邮件的参数
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.sina.com'
-EMAIL_PORT = 25
-EMAIL_HOST_USER = 'liao_hucheng@163.com'
-EMAIL_HOST_PASSWORD = 'whutlhc1229'
+# 媒体文件路径配置
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# 注册有效期
-CONFIRM_DAYS = 3
+# 发送邮件的邮箱及密码
+EMAIL_HOST = "smtp.sina.com"
+EMAIL_PORT = 25
+EMAIL_HOST_USER = "2310091880qq@sina.com"
+EMAIL_HOST_PASSWORD = "zhangzhiqiang199"
+EMAIL_USE_TLS = False
+EMAIL_FROM = "2310091880qq@sina.com"
+
+# 重载默认user
+AUTH_USER_MODEL = "Users.UserProfile"
