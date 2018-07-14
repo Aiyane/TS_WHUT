@@ -21,7 +21,7 @@ from login import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^users/$', include('Users.urls')),  # 配置用户页url
-  # url(r'^operation/$', include('operation.urls')),
+    url(r'^operation/$', include('operation.urls')),
     url(r'^index/$', views.index),      # 主页
     url(r'^login/$', views.login),      # 登陆
     url(r'^register/$', views.register),  # 注册

@@ -32,7 +32,7 @@ def login(request):
         message = "所有字段都必须填写！"
 
         if login_form.is_valid():    # 表单类自带的数据验证方法
-            username = login_form.cleaned_data['username']   # cleaned_data数据字典
+            username = login_form.cleaned_data['username']   # cleaned_data数据字典,从中获取用户名和密码
             password = login_form.cleaned_data['password']
             try:
                 user = models.User.objects.get(name=username)
