@@ -76,7 +76,14 @@ class LoginView(View):
                 user = UserProfile.objects.get(email=email)
             except:
                 # 更改密码失败, 没有该用户
-                pass
+                return render(request, 'login.html', {'error': '没有该用户'})
+
+            pwd1 = request.POST.get("password1", "")
+            pwd2 = request.POST.get("password2", "")
+            if pwd1 == pwd2:
+                user.password = make_password(pwd1)
+            else:
+                return render(request, 'login.html', {'error': '密码不一致'})
 
             user_message = UserMessage()
             user_message.user = user
@@ -88,7 +95,7 @@ class LoginView(View):
             # 返回登录界面, 等待用户验证邮箱
             pass
 
-        elif login_form.is_valid():
+        if login_form.is_valid():
             user_name = request.POST.get("username", "")
             pass_word = request.POST.get("password", "")
             user = authenticate(username=user_name, password=pass_word)
@@ -96,16 +103,16 @@ class LoginView(View):
                 if user.is_active:  # 验证是否激活
                     login(request, user)
                     # 返回主页, 登录成功
-                    pass
+                    return render(request, 'index.html')
                 else:
                     # 返回主页, 用户没有激活
                     pass
             else:
                 # 用户名或密码错误, 返回登录页
-                pass
+                return render(request, 'login.html', {'error': '密码错误'})
         else:
             # 格式错误, 返回登录页
-            pass
+            return render(request, 'login.html', {'error': '格式错误'})
 
 
 class ActiveUserView(View):
@@ -131,10 +138,10 @@ class ActiveUserView(View):
 
             # 返回主页, 验证成功
             login(request, user)
-            pass
+            return render(request, 'index.html')
         else:
             # 返回激活页面失效了
-            pass
+            return render(request, 'register.html', )
 
 
 class ResetView(View):
