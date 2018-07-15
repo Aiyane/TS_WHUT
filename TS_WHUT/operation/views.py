@@ -66,28 +66,11 @@ class RegisterView(View):
 class LoginView(View):
     def get(self, request):
         # 登录界面
-        return render(request, 'login.html')
+        return render(request, 'login.html')      
 
     def post(self, request):
-        login_form = LoginForm(request.POST)
-        email = request.POST.get("email", "")
-        if email:
-            try:
-                user = UserProfile.objects.get(email=email)
-            except:
-                error = "该用户未注册"
-                return HttpResponseRedirect('/login/?message=error')    # 跳转注册页面，返回错误信息
-
-            user_message = UserMessage()
-            user_message.user = user
-            user_message.message = "图说理工网修改密码"
-            user_message.save()
-
-            send_type = "forget"
-            send_register_email(email, send_type)  # 发送验证邮箱
-            
-
-        elif login_form.is_valid():
+        login_form = LoginForm(request.POST)  
+        if login_form.is_valid():
             user_name = request.POST.get("username", "")
             pass_word = request.POST.get("password", "")
             user = authenticate(username=user_name, password=pass_word)
@@ -97,14 +80,42 @@ class LoginView(View):
                     return render(request, 'index.html')
                 else:
                     error = "该用户未被激活"
-                    return render(request, "register.html")
+                    return render(request, "login.html", {'error':error})
             else:
                 error = "用户名或密码错误"
-                return render(request, 'login.html')
+                return render(request, 'login.html',{'error':error})
         else:
-            # 格式错误, 返回登录页
-            pass
+            error = ""
+            return render(request, 'login.html',)
 
+
+class ResetView(View):
+    def get(self, request):
+        return render(request, 'reset.html', {'error':''})
+
+    def post(self, request):
+        email = request.POST.get("email", "")
+        user = UserProfile.objects.filter(email=email)[0]
+        if user and user.email == email:
+            # 保存用户信息
+            user_message = UserMessage()
+            user_message.user = user
+            user_message.message = "图说理工网修改密码"
+            user_message.save()
+
+            password1 = request.POST.get("password1", "")
+            password2 = request.POST.get("password2", "")
+            if password1 == password2:
+                user.password = make_password(password1)
+                user.save()
+                send_register_email(email, "forget")  # 发送验证邮箱
+                return render(request, 'reset.html',{"error":"邮箱"})
+            else:
+                error = "密码输入不一致"
+                return render(request, "reset.html",{"error":error})
+        else:
+            error = "没有该用户"
+            return render(request, "reset.html",{"error":error})
 
 class ActiveUserView(View):
     """
@@ -135,7 +146,7 @@ class ActiveUserView(View):
             pass
 
 
-class ResetView(View):
+class CheckView(View):
     """
     这是一个用户重置密码逻辑(ActiveUserView)的类,继承于View，该类有一个方法，
     接受一个网页验证请求(request)参数，若用户点击重置密码，信息无误则返回密码重置网页，
