@@ -14,6 +14,5 @@ urlpatterns = [
     path('active/<str:active_code>', ActiveUserView.as_view(), name="user_active"),
     path('register/', RegisterView.as_view(), name="register"),
     path('login/', LoginView.as_view(), name="login"),
-    path('reset/<str:active_code>', ResetView.as_view(), name="reset_pwd"),
-    path('modify_pwd/', ModifyPwdView.as_view(), name="modeify_pwd"),
+    path('reset/', ResetView.as_view(), name="reset")
 ]
