@@ -25,30 +25,24 @@ class RegisterView(View):
     """
     def get(self, request):
         # 进入注册页面
-        pass
+        return render(request, 'register.html', {"error": ""})
 
     def post(self, request):
         register_form = RegisterForm(request.POST)
         if register_form.is_valid():
-            user_name = request.POST.get("email", "")  # 将用户的email与password传入
+            email = request.POST.get("email", "")  # 将用户的email与password传入
             username = request.POST.get("username", "")
-            gender = request.POST.get("gender", "")
-            birthday = request.POST.get("birth", "")
-            tel = request.POST.get("tel", "")
-            image = request.POST.get("image", "")
-            if UserProfile.objects.filter(email=user_name):
-                return render(request, "register.html", {"register_form": register_form, "error": "用户已经存在！"})
-            if UserProfile.objects.filter(username=username):
-                return render(request, "register.html", {"register_form": register_form, "error": "该用户名已被注册，请换一个用户名重新注册"})
+            user = UserProfile.objects.filter(email=email)
+            if user:
+                return render(request, "register.html", {"error": "用户已经存在！"})
+            user = UserProfile.objects.filter(username=username)
+            if user and user[0].username == username:
+                return render(request, "register.html", {"error": "该用户名已被注册，请换一个用户名重新注册"})
             pass_word = request.POST.get("password", "")
 
             user_profile = UserProfile()
             user_profile.username = username
-            user_profile.email = user_name
-            user_profile.gender = gender
-            user_profile.birthday = birthday
-            user_profile.mobile = int(tel)
-            user_profile.image = image
+            user_profile.email =email 
             user_profile.is_active = False
             user_profile.password = make_password(pass_word)
 
@@ -60,14 +54,13 @@ class RegisterView(View):
             user_message.message = "欢迎注册图说理工网"
             user_message.save()
 
-            send_register_email(user_name, "register")  # 发送验证邮箱
-            login_type = "register"
+            send_register_email(email, "register")  # 发送验证邮箱
             # 已经登录应该返回主界面
-            pass
+            login(request, user_profile)
+            return render(request, 'index.html')
         else:
             # 注册失败返回注册页面
-            pass
-            # return render(request, "register.html", {"register_form": register_form})
+            return render(request, "register.html", {"error": "表单验证失败"})
 
 
 class LoginView(View):
