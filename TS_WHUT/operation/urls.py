@@ -4,13 +4,13 @@
 """
 模块功能: operation路由
 """
-__author__ = 'Aiyane'
-from .views import ActiveUserView, RegisterView
-
+__author__ = 'whutlhc'
+from .views import ActiveUserView, RegisterView, LoginView
 
 from django.urls import path
 
 urlpatterns = [
     path('active/<str:active_code>', ActiveUserView.as_view(), name="user_active"),
     path('register/', RegisterView.as_view(), name="register"),
+    path('login/', LoginView.as_view(), name="login"),
 ]
