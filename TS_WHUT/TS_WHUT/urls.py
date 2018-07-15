@@ -19,7 +19,7 @@ from Users.views import Index
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', Index.as_view(), name="index"),  # 主页
+    path('index/', Index.as_view(), name="index"),  # 主页
     path('users/', include('Users.urls')),  # 配置用户页url
     path('operation/', include('operation.urls')),  # 配置操作页url
 ]
