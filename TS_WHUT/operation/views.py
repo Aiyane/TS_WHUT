@@ -3,10 +3,11 @@ from django.views.generic.base import View
 from django.contrib.auth import authenticate, login, logout  # 对用户名密码校验，后一个发出一个session登录，登出
 from django.http import HttpResponse, HttpResponseRedirect  # content_type='application/json'
 from utils.send_email import send_register_email
-from Users.models import  UserProfile, EmailVerifyRecord
+from Users.models import UserProfile, EmailVerifyRecord
 from django.contrib.auth.hashers import make_password
 from .models import UserMessage
 from .forms import LoginForm, RegisterForm, ModifyPwdForm
+import json
 
 class LogoutView(View):
     """
@@ -25,7 +26,7 @@ class RegisterView(View):
     """
     def get(self, request):
         # 进入注册页面
-        return render(request, 'register.html', {"error": ""})
+        return HttpResponse()
 
     def post(self, request):
         register_form = RegisterForm(request.POST)
@@ -34,7 +35,8 @@ class RegisterView(View):
             username = request.POST.get("username", "")
             user = UserProfile.objects.filter(email=email)
             if user:
-                return render(request, "register.html", {"error": "用户已经存在！"})
+                error = "用户已经存在"
+                return render(request, "register.html", {'error':error})
             user = UserProfile.objects.filter(username=username)
             if user and user[0].username == username:
                 return render(request, "register.html", {"error": "该用户名已被注册，请换一个用户名重新注册"})
@@ -109,13 +111,13 @@ class ResetView(View):
                 user.password = make_password(password1)
                 user.save()
                 send_register_email(email, "forget")  # 发送验证邮箱
-                return render(request, 'reset.html',{"error":"邮箱"})
+                return render(request, 'reset.html',{"error": "邮箱"})
             else:
                 error = "密码输入不一致"
-                return render(request, "reset.html",{"error":error})
+                return render(request, "reset.html",{"error": error})
         else:
             error = "没有该用户"
-            return render(request, "reset.html",{"error":error})
+            return render(request, "reset.html",{"error": error})
 
 class ActiveUserView(View):
     """
