@@ -17,10 +17,15 @@ from django.contrib import admin
 from django.urls import path, include
 from Users.views import Index
 from django.views.generic.base import TemplateView
+import xadmin
+from operation.views import ActiveUserView, RegisterView, ResetView,  ModifyPwdView, LoginView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', xadmin.site.urls),
     path('', TemplateView.as_view(template_name='index.html')),  # 主页
     path('users/', include('Users.urls')),  # 配置用户页url
-    path('operation/', include('operation.urls')),  # 配置操作页url
+    path('active/<str:active_code>', ActiveUserView.as_view(), name="user_active"),
+    path('user/', RegisterView.as_view(), name="register"),
+    path('user/login/', LoginView.as_view(), name="login"),
+    path('user/reset/', ResetView.as_view(), name="reset")
 ]

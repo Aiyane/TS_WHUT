@@ -7,6 +7,10 @@ from Users.models import UserProfile, EmailVerifyRecord
 from django.contrib.auth.hashers import make_password
 from .models import UserMessage
 from .forms import LoginForm, RegisterForm, ModifyPwdForm
+<<<<<<< HEAD
+=======
+from utils.AltResponse import AltHttpResponse
+>>>>>>> c083c0f163d9ee8a811a46512183fbcaef972bc1
 import json
 
 class LogoutView(View):
@@ -26,7 +30,12 @@ class RegisterView(View):
     """
     def get(self, request):
         # 进入注册页面
+<<<<<<< HEAD
         return HttpResponse()
+=======
+        
+        return render(request, 'register.html', {"error": ""})
+>>>>>>> c083c0f163d9ee8a811a46512183fbcaef972bc1
 
     def post(self, request):
         register_form = RegisterForm(request.POST)
@@ -35,11 +44,15 @@ class RegisterView(View):
             username = request.POST.get("username", "")
             user = UserProfile.objects.filter(email=email)
             if user:
+<<<<<<< HEAD
                 error = "用户已经存在"
                 return render(request, "register.html", {'error':error})
+=======
+                return AltHttpResponse(json.dumps({"error": "邮箱已被注册"}), status_code=400)
+>>>>>>> c083c0f163d9ee8a811a46512183fbcaef972bc1
             user = UserProfile.objects.filter(username=username)
             if user and user[0].username == username:
-                return render(request, "register.html", {"error": "该用户名已被注册，请换一个用户名重新注册"})
+                return AltHttpResponse(json.dumps({"error": "用户名已经存在"}), status_code=400)
             pass_word = request.POST.get("password", "")
 
             user_profile = UserProfile()
@@ -59,10 +72,10 @@ class RegisterView(View):
             send_register_email(email, "register")  # 发送验证邮箱
             # 已经登录应该返回主界面
             login(request, user_profile)
-            return render(request, 'index.html')
+            return AltHttpResponse(json.dumps({"status": 'true'}))
         else:
             # 注册失败返回注册页面
-            return render(request, "register.html", {"error": "表单验证失败"})
+            return AltHttpResponse(json.dumps({"error": "表单验证失败"}), status_code=400)
 
 
 class LoginView(View):

@@ -76,6 +76,7 @@ class ImageModel(models.Model):
     like_nums = models.IntegerField(default=0, verbose_name="点赞数")
     width = models.IntegerField(default=0, verbose_name="宽")
     heigth = models.IntegerField(default=0, verbose_name="高")
+    cates = models.CharField(max_length=200, verbose_name="种类字符串", null=True, blank=True)
 
     class Meta:
         verbose_name = "图片"
