@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import TemplateView
 import xadmin
-from operation.views import ActiveUserView, ResetView,  ModifyPwdView
+from operation.views import ActiveUserView, ResetView,  ModifyPwdView, CatesView
 from Users.views import RegisterView, LoginView, GetUserMsgView, LogoutView, History
 from Images.views import ImageView, ImageCateView, ImagePattern, ImageUser, ImageLike, ImageCollect
 
@@ -38,4 +38,5 @@ urlpatterns = [
     path('image/collect', ImageCollect.as_view(), name="collect"),
 
     path('active/<str:active_code>', ActiveUserView.as_view(), name="user_active"),
+    path('cates/', CatesView.as_view(), name="cates"),
 ]

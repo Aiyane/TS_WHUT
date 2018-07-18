@@ -4,7 +4,7 @@ from django.views.generic.base import View
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseRedirect
 from utils.send_email import send_register_email
-from Users.models import UserProfile, EmailVerifyRecord
+from Users.models import UserProfile, EmailVerifyRecord, GroupImage
 from django.contrib.auth.hashers import make_password
 from .models import UserMessage
 from .forms import LoginForm, RegisterForm, ModifyPwdForm, EmailForm
@@ -122,3 +122,35 @@ class ModifyPwdView(View):
         else:
             # 密码格式不正确, 返回密码重置页
             pass
+
+
+class CatesView(View):
+    def get(self, request):
+        """
+        url:
+            /cates
+        method:
+            GET
+        params:
+            *:num
+        success:
+            status_code: 200
+            json=[
+                str (种类名)
+            ]
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        """
+        num = request.GET.get("num")
+        if not num:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+        groups = GroupImage.objects.all().order_by("-add_time")[:num]
+        datas = []
+        for group in groups:
+            datas.append(group.name)
+        return AltHttpResponse(json.dumps(datas))

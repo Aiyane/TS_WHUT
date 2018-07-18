@@ -29,9 +29,10 @@
     - [登录状态下获取一定数量的已收藏的图片收藏](#登录状态下获取一定数量的已收藏的图片收藏)
     - [收藏某图片](#收藏某图片)
     - [取消收藏](#取消收藏)
+- [其他](#其他)
+    - [获取一定数量的类别名](#获取一定数量的类别名)
 
 ## 用户操作
-
 ### 登录状态获得用户信息
 ```
 url:
@@ -533,6 +534,26 @@ success:
     json={
         "status": "true"
     }
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
+```
+## 其他
+### 获取一定数量的类别名
+```
+url:
+    /cates
+method:
+    GET
+params:
+    *:num
+success:
+    status_code: 200
+    json=[
+        str (种类名)
+    ]
 failure:
     status_code: 400
     json={
