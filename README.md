@@ -16,6 +16,11 @@
     - [非登录状态获取用户信息](#非登录状态获取用户信息)
     - [登出](#登出)
     - [获取用户上传,下载记录,按照时间倒序](#获取用户上传_下载记录_按照时间倒序)
+    - [查询粉丝名单](#查询粉丝名单)
+    - [关注他人](#关注他人)
+    - [取消关注](#取消关注)
+    - [已关注哪些人](#已关注哪些人)
+    - [判断是否登录](#判断是否登录)
 - [图片操作](#图片操作)
     - [上传图片](#上传图片)
     - [删除图片](#删除图片)
@@ -240,6 +245,98 @@ success:
             "width": int,
         }
     }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+```
+### 查询粉丝名单
+```
+url:
+    /user/follow
+method:
+    GET
+success:
+    status_code: 200
+    json=[
+        {
+            "id": int,
+            "username": str,
+            "image": str, (url)
+            "if_sign": str,
+        },
+    ]
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+```
+### 关注他人
+```
+url:
+    /user/follow
+method:
+    POST
+params:
+    *:id
+success:
+    status_code: 200
+    json={
+        "status": "true"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
+```
+### 取消关注
+```
+url:
+    /user/follow
+method:
+    DELETE
+params:
+    *:id
+success:
+    status_code: 200
+    json={
+        "status": "true"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
+```
+### 已关注哪些人
+```
+url:
+    /user/following
+method:
+    GET
+success:
+    status_code: 200
+    json=[
+        {
+            "id": int,
+            "username": str,
+            "image": str, (url)
+            "if_sign": str,
+        },
+    ]
 failure:
     status_code: 404
     json={
@@ -542,6 +639,23 @@ failure:
     status_code: 400
     json={
         "error": "参数错误"
+    }
+```
+### 判断是否登录
+```
+url:
+    /user/is_login/
+method:
+    GET 
+success:
+    status_code: 200
+    json={
+        "status": "true"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
     }
 ```
 ## 其他

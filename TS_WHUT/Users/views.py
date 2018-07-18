@@ -11,9 +11,10 @@ from django.contrib.auth.hashers import make_password
 from django.views.generic.base import View
 from django.http import QueryDict
 from django.contrib.auth import login, authenticate, logout
+from .forms import RegisterForm
 import json
 
-from .models import UserProfile, ImageModel, DownloadShip
+from .models import UserProfile, ImageModel, DownloadShip, Follow
 from operation.models import UserMessage
 
 from utils.send_email import send_register_email
@@ -85,16 +86,23 @@ class RegisterView(View):
                 }
         """
         email = request.POST.get("email", "")
-        user = UserProfile.objects.get(email=email)
-        if user:
+        emails = list(UserProfile.objects.all().values_list('email'))
+        if email in emails:
+            user = UserProfile.objects.get(email=email)
             response = AltHttpResponse(json.dumps({"error": "邮箱已被注册"}))
             response.status_code = 400
             return response
 
         username = request.POST.get("username", "")
-        user = UserProfile.objects.get(username=username)
-        if user:
+        usernames = list(UserProfile.objects.all().values_list('username'))
+        if username in usernames:
             response = AltHttpResponse(json.dumps({"error": "用户名已经存在"}))
+            response.status_code = 400
+            return response
+
+        register_form = RegisterForm(request.POST)
+        if not register_form.is_valid:
+            response = AltHttpResponse(json.dumps({"error": "格式错误"}))
             response.status_code = 400
             return response
 
@@ -417,3 +425,174 @@ class History(View):
             }
             upload_images.append(data)
         return AltHttpResponse(json.dumps({"download-images": download_images, "upload-images": upload_images}))
+
+
+class FollowView(View):
+    @is_login
+    def get(self, request):
+        """查询粉丝名单
+        url:
+            /user/follow
+        method:
+            GET
+        success:
+            status_code: 200
+            json=[
+                {
+                    "id": int,
+                    "username": str,
+                    "image": str, (url)
+                    "if_sign": str,
+                },
+            ]
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        user = request.user
+        follows = Follow.objects.filter(follow=user)
+        datas = []
+        for follow in follows:
+            fan = follow.fan
+            data = {
+                "id": fan.id,
+                "username": fan.username,
+                "image": fan.image.url,
+                "if_sign": fan.if_sign
+            }
+            datas.append(data)
+        return AltHttpResponse(json.dumps(datas))
+
+    @is_login
+    def post(self, request):
+        """关注他人
+        url:
+            /user/follow
+        method:
+            POST
+        params:
+            *:id
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        """
+        user = request.user
+        user_id = int(request.POST.get("id"))
+        if user_id:
+            follow = UserProfile.objects.get(id=user_id)
+            Follow(fan=user, follow=follow).save()
+            return AltHttpResponse(json.dumps({"status": "true"}))
+        else:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+
+    @is_login
+    def delete(self, request):
+        """
+        url:
+            /user/follow
+        method:
+            DELETE
+        params:
+            *:id
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        """
+        user = request.user
+        user_id = int(request.POST.get("id"))
+        if user_id:
+            follow = UserProfile.objects.get(id=user_id)
+            Follow.objects.filter(fan=user, follow=follow)[0].delete()
+            return AltHttpResponse(json.dumps({"status": "true"}))
+        else:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+
+class Following(View):
+    @is_login
+    def get(self, request):
+        """
+        url:
+            /user/following
+        method:
+            GET
+        success:
+            status_code: 200
+            json=[
+                {
+                    "id": int,
+                    "username": str,
+                    "image": str, (url)
+                    "if_sign": str,
+                },
+            ]
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        user = request.user
+        follows = Follow.objects.filter(fan=user)
+        datas = []
+        for fols in follows:
+            follew = fols.follow
+            data = {
+                "id": follew.id,
+                "username": follew.username,
+                "image": follew.image.url,
+                "if_sign": follew.if_sign
+            }
+            datas.append(data)
+        return AltHttpResponse(json.dumps(datas))
+
+
+class IsLogin(View):
+    @is_login
+    def get(self, request):
+        """
+        url:
+            /user/is_login/
+        method:
+            GET 
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        return AltHttpResponse(json.dumps({"status": "true"}))

@@ -76,7 +76,7 @@ class BannerModel(models.Model):
 class ImageModel(models.Model):
     # 图片
     image = models.ImageField(upload_to="images/%Y/%m",
-                              verbose_name="图片", max_length=100)
+                              verbose_name="图片", max_length=100, null=True, blank=True)
     add_time = models.DateField(default=datetime.now, verbose_name="添加时间")
     if_active = models.BooleanField(default=False, verbose_name="是否通过审核")
     desc = models.CharField(max_length=200, verbose_name="描述",

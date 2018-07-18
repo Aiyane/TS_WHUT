@@ -16,27 +16,38 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import TemplateView
+
+from django.conf.urls import url
+from django.conf.urls.static import static
+from django.conf import settings
+from django.views.static import serve
+
 import xadmin
 from operation.views import ActiveUserView, ResetView,  ModifyPwdView, CatesView
-from Users.views import RegisterView, LoginView, GetUserMsgView, LogoutView, History
+from Users.views import RegisterView, LoginView, GetUserMsgView, LogoutView, History, FollowView, IsLogin, Following
 from Images.views import ImageView, ImageCateView, ImagePattern, ImageUser, ImageLike, ImageCollect
 
 urlpatterns = [
     path('admin/', xadmin.site.urls),
 
     path('user/', RegisterView.as_view(), name="register"),
-    path('user/msg/<str:username>', GetUserMsgView.as_view(), name="get_user_msg"),
-    path('user/login', LoginView.as_view(), name="login"),
-    path('user/logout', LogoutView.as_view(), name="logout"),
-    path('user/history', History.as_view(), name="history"),
+    path('user/msg/<str:username>/', GetUserMsgView.as_view(), name="get_user_msg"),
+    path('user/login/', LoginView.as_view(), name="login"),
+    path('user/logout/', LogoutView.as_view(), name="logout"),
+    path('user/history/', History.as_view(), name="history"),
+    path('user/follow/', FollowView.as_view(), name="follow"),
+    path('user/following/', Following.as_view(), name="following"),
+    path('user/is_login/', IsLogin.as_view(), name="is_login"),
 
     path('image/', ImageView.as_view(), name="image"),
-    path('image/cate', ImageCateView.as_view(), name="image_cate"),
-    path('image/pattern', ImagePattern.as_view(), name="image_pattern"),
-    path('image/user', ImageUser.as_view(), name="image_like"),
-    path('image/like', ImageLike.as_view(), name="like"),
-    path('image/collect', ImageCollect.as_view(), name="collect"),
+    path('image/cate/', ImageCateView.as_view(), name="image_cate"),
+    path('image/pattern/', ImagePattern.as_view(), name="image_pattern"),
+    path('image/user/', ImageUser.as_view(), name="image_like"),
+    path('image/like/', ImageLike.as_view(), name="like"),
+    path('image/collect/', ImageCollect.as_view(), name="collect"),
 
-    path('active/<str:active_code>', ActiveUserView.as_view(), name="user_active"),
+    path('active/<str:active_code>/', ActiveUserView.as_view(), name="user_active"),
     path('cates/', CatesView.as_view(), name="cates"),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
