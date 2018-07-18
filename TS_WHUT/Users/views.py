@@ -1,9 +1,419 @@
-from django.shortcuts import render
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# views.py
+"""
+模块功能: /user路由开头的API, 与用户相关的各种操作
+"""
+__author__ = 'Aiyane'
+
+
+from django.contrib.auth.hashers import make_password
 from django.views.generic.base import View
+from django.http import QueryDict
+from django.contrib.auth import login, authenticate, logout
+import json
+
+from .models import UserProfile, ImageModel, DownloadShip
+from operation.models import UserMessage
+
+from utils.send_email import send_register_email
+from utils.AltResponse import AltHttpResponse
+from utils.is_login import is_login
 
 
-class Index(View):
+class RegisterView(View):
+    @is_login
     def get(self, request):
-        return render(request, 'index.html')
+        """
+        url:
+            /user
+        method:
+            GET
+        success:
+            status_code: 200
+            json={
+                "id": int,
+                "username": str,
+                "email": str,
+                "gender": str, (male或female)
+                "image": str, (url)
+                "birthday": data,
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        user = request.user
+        data = {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "gender": user.gender,
+            "image": user.image.url,
+            "birthday": user.birthday,
+        }
+        return AltHttpResponse(json.dumps(data))
+
+    def post(self, request):
+        """
+        url:
+            /user
+        method:
+            POST
+        params:
+            *:username (formData)
+            *:password (formData)
+            *:email (formData)
+        ret:
+            success:
+                status_code=200
+                json={
+                    "status": "true",
+                    "message": "请前往邮箱验证"
+                }
+            failure:
+                status_code=400
+                json={
+                    "error": "邮箱已被注册"
+                }
+            failure:
+                status_code=400
+                json={
+                    "error": "用户名已经存在"
+                }
+        """
+        email = request.POST.get("email", "")
+        user = UserProfile.objects.get(email=email)
+        if user:
+            response = AltHttpResponse(json.dumps({"error": "邮箱已被注册"}))
+            response.status_code = 400
+            return response
+
+        username = request.POST.get("username", "")
+        user = UserProfile.objects.get(username=username)
+        if user:
+            response = AltHttpResponse(json.dumps({"error": "用户名已经存在"}))
+            response.status_code = 400
+            return response
+
+        pass_word = request.POST.get("password", "")
+        user_profile = UserProfile()
+        user_profile.username = username
+        user_profile.email = email
+        user_profile.is_active = False
+        user_profile.password = pass_word
+        user_profile.save()
+
+        # 写入欢迎注册消息
+        user_message = UserMessage()
+        user_message.user = user_profile
+        user_message.message = "欢迎注册图说理工网"
+        user_message.save()
+
+        # 发送验证邮箱
+        send_register_email(email, "register")
+
+        # 登录
+        login(request, user_profile)
+        return AltHttpResponse(json.dumps({"status": 'true', "message": "请前往邮箱验证"}))
+
+    @is_login
+    def delete(self, request):
+        """
+        url:
+            /user
+        method:
+            DELETE
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        request.user.delete()
+        return AltHttpResponse(json.dumps({"status": "true"}))
+
+    @is_login
+    def put(self, request):
+        """
+        url:
+            /user
+        method:
+            PUT 
+        params:
+            :username (formData)
+            :email (formData)
+            :image (formData)
+            :gender (formData)
+            :birthday (formData)
+            :password (formData)
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        success:
+            status_code: 200
+            json={
+                "status": "true",
+                "message": "请前往邮箱验证"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "邮箱已经存在"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "用户名已经存在"
+            }
+        """
+        user = request.user
+        put_get = QueryDict(request.body).get
+
+        # 邮箱必须唯一
+        email = put_get("email", "")
+        change_eamil = False
+        if email:
+            if UserProfile.objects.get(email=email):
+                response = AltHttpResponse(json.dumps({"error": "邮箱已经存在"}))
+                response.status_code = 400
+                return response
+            else:
+                # 写入重置邮箱消息
+                user_message = UserMessage()
+                user_message.user = user
+                user_message.message = user.username + "修改邮箱为:" + email
+                user_message.save()
+
+                # 发送验证邮箱
+                send_register_email(email, "update_email")
+                change_eamil = True
+
+        # 用户名必须唯一
+        username = put_get("username", "")
+        if username:
+            if UserProfile.objects.get(username=username):
+                response = AltHttpResponse(json.dumps({"hrror": "用户名已经存在"}))
+                response.status_code = 400
+                return response
+            else:
+                user.username = username
+
+        image = request.files.get("image", "")
+        if image:
+            user.image = image
+        gender = put_get("gender", "")
+        if gender:
+            user.gender = gender
+        birthday = put_get("birthday", "")
+        if birthday:
+            user.birthday = birthday
+        password = put_get("password", "")
+        if password:
+            user.password = make_password(password)
+        user.save()
+
+        if change_eamil:
+            return AltHttpResponse(json.dumps({"status": "true", "message": "请前往邮箱验证"}))
+        else:
+            return AltHttpResponse(json.dumps({"status": "true"}))
 
 
+class LoginView(View):
+    def post(self, request):
+        """
+        url:
+            /user/login
+        method:
+            POST
+        params:
+            *:username (formData)
+            *:password (formData)
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "用户名或密码错误"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未激活"
+            }
+        """
+        username = request.POST.get("username", "")
+        password = request.POST.get("password", "")
+        user = authenticate(username=username, password=password)
+
+        if user is None:
+            response = AltHttpResponse(json.dumps({"error": "用户名或密码错误"}))
+            response.status_code = 400
+            return response
+        elif user.is_active:
+            login(request, user)
+            return AltHttpResponse(json.dumps({"status": "true"}))
+        else:
+            response = AltHttpResponse(json.dumps({"error": "用户未激活"}))
+            response.status_code = 404
+            return response
+
+
+class GetUserMsgView(View):
+    def get(self, request, username):
+        """
+        url:
+            /user/<username>
+        method:
+            GET
+        params:
+            *:username (path)
+        success:
+            status_code: 200
+            json={
+                "id": int,
+                "username": str,
+                "email": str,
+                "gender": str, (male或female)
+                "image": str, (url)
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "用户不存在"
+            }
+        """
+        user = UserProfile.objects.get(username=username)
+        if user and user.username == username:
+            data = {
+                "id": user.id,
+                "username": username,
+                "email": user.email,
+                "image": user.image.url,
+                "gender": user.gender,
+            }
+            return AltHttpResponse(json.dumps(data))
+        else:
+            response = AltHttpResponse(json.dumps({"error": "用户不存在"}))
+            response.status_code = 400
+            return response
+
+
+class LogoutView(View):
+    @is_login
+    def post(self, request):
+        """
+        url:
+            /user/logout
+        method:
+            POST
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        user = request.user
+        logout(request)
+        return AltHttpResponse(json.dumps({"status": "true"}))
+
+
+class History(View):
+    @is_login
+    def post(self, request):
+        """ 按照时间倒序
+        url:
+            /user/logout
+        method:
+            POST
+        params:
+            :num (formData)
+        success:
+            status_code: 200
+            json={
+                "download-images":{
+                    "id": int,
+                    "image": str, (url)
+                    "desc": str,
+                    "user": str,
+                    "pattern": str,
+                    "like": int,
+                    "collection": int,
+                    "height": int,
+                    "width": int,
+                },
+                "upload-images":{
+                    "id": int,
+                    "image": str, (url)
+                    "is-active": str,
+                    "desc": str,
+                    "user": str, (上传者用户名)
+                    "pattern": str, (格式)
+                    "like": int,
+                    "collection": int,
+                    "height": int,
+                    "width": int,
+                }
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        user = request.user
+        num = int(request.POST.get("num"))
+        images = ImageModel.objects.filter(user=user).order_by("-add_time")[:num]
+        ships = DownloadShip.objects.filter(user=user).order_by("-add_time")[:num]
+        download_images = []
+        upload_images = []
+        for ship in ships:
+            data = {
+                "id": ship.image.id,
+                "image": ship.image.image.url,
+                "desc": ship.image.desc,
+                "user": ship.image.user.username,
+                "pattern": ship.image.pattern,
+                "like": ship.image.like_nums,
+                "collection": ship.image.collection_nums,
+                "height": ship.image.image.height,
+                "width": ship.image.image.width,
+            }
+            download_images.append(data)
+        for image in images:
+            data = {
+                "id": image.id,
+                "image": image.image.url,
+                "is-active": image.is_active,
+                "desc": image.desc,
+                "user": image.user.username,
+                "pattern": image.pattern,
+                "like": image.like_nums,
+                "collection": image.collection_nums,
+                "height": image.image.height,
+                "width": image.image.width,
+            }
+            upload_images.append(data)
+        return AltHttpResponse(json.dumps({"download-images": download_images, "upload-images": upload_images}))

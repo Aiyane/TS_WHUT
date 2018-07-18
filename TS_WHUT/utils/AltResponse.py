@@ -1,8 +1,12 @@
 from django.http import HttpResponse
 
-headers = {"Access-Control-Allow-Origin": "*",
-           "Access-Control-Allow-Methods": "POST",
-           "Content-type": "application/json"}
+headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, GET, PUT, DELETE, OPTIONS",
+    "Content-type": "application/json",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Headers": "x-requested-with"
+}
 
 
 class AltHttpResponse(HttpResponse):
