@@ -1,41 +1,36 @@
 from django.shortcuts import render
 from django.views.generic.base import View
+from django.contrib import auth
 from django.contrib.auth import authenticate, login, logout  # 对用户名密码校验，后一个发出一个session登录，登出
 from django.http import HttpResponse, HttpResponseRedirect  # content_type='application/json'
 from utils.send_email import send_register_email
 from Users.models import UserProfile, EmailVerifyRecord
 from django.contrib.auth.hashers import make_password
 from .models import UserMessage
-from .forms import LoginForm, RegisterForm, ModifyPwdForm
-<<<<<<< HEAD
-=======
-from utils.AltResponse import AltHttpResponse
->>>>>>> c083c0f163d9ee8a811a46512183fbcaef972bc1
-import json
+from .forms import LoginForm,RegisterForm,ModifyPwdForm
+from django.contrib.auth.models import User
 
 class LogoutView(View):
     """
     用户登出
     """
-
     def get(self, request):
-        logout(request)
-        # 登出, 返回主界面
-        pass
+        if request.user.is_authenticated():
+            auth.logout(request)
+            # 登出, 返回主界面
+            return AltHttpResponse(json.dumps({"ststus": 'true'}))
+        else:
+            error = "你尚未登陆,无需登出"
+            return AltHttpResponse(json.dumps({"error": error}))
 
-
+        
 class RegisterView(View):
     """
     这是一个注册逻辑(RegisterView)的类，继承于View
     """
     def get(self, request):
-        # 进入注册页面
-<<<<<<< HEAD
-        return HttpResponse()
-=======
-        
+        # 进入注册页面  
         return render(request, 'register.html', {"error": ""})
->>>>>>> c083c0f163d9ee8a811a46512183fbcaef972bc1
 
     def post(self, request):
         register_form = RegisterForm(request.POST)
@@ -44,12 +39,9 @@ class RegisterView(View):
             username = request.POST.get("username", "")
             user = UserProfile.objects.filter(email=email)
             if user:
-<<<<<<< HEAD
                 error = "用户已经存在"
                 return render(request, "register.html", {'error':error})
-=======
                 return AltHttpResponse(json.dumps({"error": "邮箱已被注册"}), status_code=400)
->>>>>>> c083c0f163d9ee8a811a46512183fbcaef972bc1
             user = UserProfile.objects.filter(username=username)
             if user and user[0].username == username:
                 return AltHttpResponse(json.dumps({"error": "用户名已经存在"}), status_code=400)
@@ -79,31 +71,29 @@ class RegisterView(View):
 
 
 class LoginView(View):
-    def get(self, request):
-        # 登录界面
-        return render(request, 'login.html')      
 
     def post(self, request):
         login_form = LoginForm(request.POST)  
         if login_form.is_valid():
             user_name = request.POST.get("username", "")
             pass_word = request.POST.get("password", "")
+
             user = authenticate(username=user_name, password=pass_word)
             if user is not None:
                 if user.is_active:  # 验证是否激活
-                    login(request, user)
-                    return render(request, 'index.html')
+                    auth.login(request, user)
+                    return AltHttpResponse(json.dump({"status": 'true'}))
                 else:
                     error = "该用户未被激活"
-                    return render(request, "login.html", {'error':error})
+                    return AltHttpResponse(json.dump({"error": error}))
             else:
                 error = "用户名或密码错误"
-                return render(request, 'login.html',{'error':error})
+                return AltHttpResponse(json.dump({"error": error}))
         else:
-            error = ""
-            return render(request, 'login.html',)
+            error = "请正确填写登陆信息"
+            return AltHttpResponse(json.dumps({"error": error}))
 
-
+        
 class ResetView(View):
     def get(self, request):
         return render(request, 'reset.html', {'error':''})
