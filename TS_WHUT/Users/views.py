@@ -338,7 +338,7 @@ class LogoutView(View):
         user = request.user
         logout(request)
         return AltHttpResponse(json.dumps({"status": "true"}))
-
+        
 
 class History(View):
     @is_login

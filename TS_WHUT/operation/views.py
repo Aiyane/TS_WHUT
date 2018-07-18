@@ -13,6 +13,7 @@ from utils.is_login import is_login
 import json
 
 
+        
 class ResetView(View):
     def get(self, request):
         return render(request, 'reset.html', {'error': ''})
