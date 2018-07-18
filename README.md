@@ -343,6 +343,23 @@ failure:
         "error": "用户未登录"
     }
 ```
+### 判断是否登录
+```
+url:
+    /user/is_login/
+method:
+    GET 
+success:
+    status_code: 200
+    json={
+        "status": "true"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+```
 ## 图片操作
 ### 上传图片
 ```
@@ -639,23 +656,6 @@ failure:
     status_code: 400
     json={
         "error": "参数错误"
-    }
-```
-### 判断是否登录
-```
-url:
-    /user/is_login/
-method:
-    GET 
-success:
-    status_code: 200
-    json={
-        "status": "true"
-    }
-failure:
-    status_code: 404
-    json={
-        "error": "用户未登录"
     }
 ```
 ## 其他
