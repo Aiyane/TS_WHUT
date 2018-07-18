@@ -18,6 +18,10 @@ class ImageView(View):
             /image
         method:
             POST
+        params:
+            :image (FILES)
+            :desc (formData 描述)
+            :cates (formData 分类字符串)
         success:
             status_code: 200
             json={
