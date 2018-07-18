@@ -35,6 +35,8 @@ class UserProfile(AbstractUser):
     image = models.ImageField(upload_to="heads/%Y/%m", default="heads/default.png",
                               max_length=100, verbose_name="头像")
     if_sign = models.BooleanField(verbose_name="签约", default=False)
+    follow_nums = models.IntegerField(verbose_name="关注者量", default=0)
+    fan_nums = models.IntegerField(verbose_name="粉丝量", default=0)
 
     class Meta:
         verbose_name = "用户信息"

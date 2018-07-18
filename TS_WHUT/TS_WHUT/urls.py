@@ -24,7 +24,8 @@ from django.views.static import serve
 
 import xadmin
 from operation.views import ActiveUserView, ResetView,  ModifyPwdView, CatesView
-from Users.views import RegisterView, LoginView, GetUserMsgView, LogoutView, History, FollowView, IsLogin, Following
+from Users.views import (RegisterView, LoginView, GetUserMsgView,
+                         LogoutView, History, FollowView, IsLogin, Following, FollowNum, FanNum)
 from Images.views import ImageView, ImageCateView, ImagePattern, ImageUser, ImageLike, ImageCollect
 
 urlpatterns = [
@@ -36,6 +37,8 @@ urlpatterns = [
     path('user/logout/', LogoutView.as_view(), name="logout"),
     path('user/history/', History.as_view(), name="history"),
     path('user/follow/', FollowView.as_view(), name="follow"),
+    path('user/follow/nums/', FollowNum.as_view(), name="follow_nums"),
+    path('user/fan/nums/', FanNum.as_view(), name="fan_nums"),
     path('user/following/', Following.as_view(), name="following"),
     path('user/is_login/', IsLogin.as_view(), name="is_login"),
 
@@ -46,7 +49,8 @@ urlpatterns = [
     path('image/like/', ImageLike.as_view(), name="like"),
     path('image/collect/', ImageCollect.as_view(), name="collect"),
 
-    path('active/<str:active_code>/', ActiveUserView.as_view(), name="user_active"),
+    path('active/<str:active_code>/',
+         ActiveUserView.as_view(), name="user_active"),
     path('cates/', CatesView.as_view(), name="cates"),
 ]
 

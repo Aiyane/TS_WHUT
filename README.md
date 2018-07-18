@@ -21,6 +21,8 @@
     - [取消关注](#取消关注)
     - [已关注哪些人](#已关注哪些人)
     - [判断是否登录](#判断是否登录)
+    - [获取用户关注了多少人](#获取用户关注了多少人)
+    - [获取粉丝数](#获取粉丝数)
 - [图片操作](#图片操作)
     - [上传图片](#上传图片)
     - [删除图片](#删除图片)
@@ -353,6 +355,40 @@ success:
     status_code: 200
     json={
         "status": "true"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+```
+### 获取用户关注了多少人
+```
+url:
+    /user/follow/nums/
+method:
+    GET 
+success:
+    status_code: 200
+    json={
+        "num": int
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+```
+### 获取粉丝数
+```
+url:
+    /user/fan/nums/
+method:
+    GET 
+success:
+    status_code: 200
+    json={
+        "num": int
     }
 failure:
     status_code: 404

@@ -346,7 +346,7 @@ class LogoutView(View):
         user = request.user
         logout(request)
         return AltHttpResponse(json.dumps({"status": "true"}))
-        
+
 
 class History(View):
     @is_login
@@ -393,8 +393,10 @@ class History(View):
         """
         user = request.user
         num = int(request.POST.get("num"))
-        images = ImageModel.objects.filter(user=user).order_by("-add_time")[:num]
-        ships = DownloadShip.objects.filter(user=user).order_by("-add_time")[:num]
+        images = ImageModel.objects.filter(
+            user=user).order_by("-add_time")[:num]
+        ships = DownloadShip.objects.filter(
+            user=user).order_by("-add_time")[:num]
         download_images = []
         upload_images = []
         for ship in ships:
@@ -491,9 +493,11 @@ class FollowView(View):
             }
         """
         user = request.user
+        user.follow_nums += 1
         user_id = int(request.POST.get("id"))
         if user_id:
             follow = UserProfile.objects.get(id=user_id)
+            follow.fan_nums += 1
             Follow(fan=user, follow=follow).save()
             return AltHttpResponse(json.dumps({"status": "true"}))
         else:
@@ -527,15 +531,18 @@ class FollowView(View):
             }
         """
         user = request.user
+        user.follow_nums -= 1
         user_id = int(request.POST.get("id"))
         if user_id:
             follow = UserProfile.objects.get(id=user_id)
+            follow.fan_nums -= 1
             Follow.objects.filter(fan=user, follow=follow)[0].delete()
             return AltHttpResponse(json.dumps({"status": "true"}))
         else:
             response = AltHttpResponse(json.dumps({"error": "参数错误"}))
             response.status_code = 400
             return response
+
 
 class Following(View):
     @is_login
@@ -565,12 +572,12 @@ class Following(View):
         follows = Follow.objects.filter(fan=user)
         datas = []
         for fols in follows:
-            follew = fols.follow
+            follow = fols.follow
             data = {
-                "id": follew.id,
-                "username": follew.username,
-                "image": follew.image.url,
-                "if_sign": follew.if_sign
+                "id": follow.id,
+                "username": follow.username,
+                "image": follow.image.url,
+                "if_sign": follow.if_sign
             }
             datas.append(data)
         return AltHttpResponse(json.dumps(datas))
@@ -596,3 +603,49 @@ class IsLogin(View):
             }
         """
         return AltHttpResponse(json.dumps({"status": "true"}))
+
+
+class FollowNum(View):
+    @is_login
+    def get(self, request):
+        """
+        url:
+            /user/follow/nums/
+        method:
+            GET 
+        success:
+            status_code: 200
+            json={
+                "num": int
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        user = request.user
+        return AltHttpResponse(json.dumps({"num": user.follow_nums}))
+
+
+class FanNum(View):
+    @is_login
+    def get(self, request):
+        """
+        url:
+            /user/fan/nums/
+        method:
+            GET 
+        success:
+            status_code: 200
+            json={
+                "num": int
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        user = request.user
+        return AltHttpResponse(json.dumps({"num": user.fan_nums}))
