@@ -280,7 +280,7 @@ class GetUserMsgView(View):
     def get(self, request, username):
         """
         url:
-            /user/<username>
+            /user/msg/<username>
         method:
             GET
         params:
