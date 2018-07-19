@@ -649,3 +649,106 @@ class FanNum(View):
         """
         user = request.user
         return AltHttpResponse(json.dumps({"num": user.fan_nums}))
+
+
+@is_login
+class Follow(View):
+    """
+    关注部分的逻辑Follow类的实现
+    主要逻辑:
+    (1)用户关注他人
+    (2)该用户关注的用户数量+1
+    (3)被关注者粉丝量+1
+    (4)查看关注自己所有人
+    (5)查看自己关注的所有人
+    """
+
+    def POST(self, request):
+        # 关注他人
+        user = request.user
+        id = user.id
+        user_id = request.POST.get("user_id", "")
+        follow = UserProfile.objects.filter(user_id=user_id)
+
+        if user and user:
+            if user_id not in follow.fans:
+                follow.fans_num += 1
+                user.follow_num += 1
+                follow.fans.id.append(user_id)
+                user.follow.id.append(id)
+
+                return AltHttpResponse(json.dumps({"status": 'true'}))
+            else:
+                error = "已关注该用户"
+                return AltHttpResponse(json.dumps({"error": error}))
+        else:
+            error = "关注失败"
+            return AltHttpResponse(json({"error": error}))
+
+
+class Myfollow(View):
+    # 查看所有我关注的用户
+    def POST(self, request):
+        follows = []
+        user = request.user
+        if user.follow:
+            for i in user.follow.id:
+                foll = UserProfile.objects.get(id=id)
+                meg = {
+                    "username": foll.username,
+                    "gender": foll.username,
+                    "image": foll.image,
+                    "fans_num": foll.fans_num,
+                }
+                follows.append(meg)
+            return AltHttpResponse(json.dumps({follows}))
+        else:
+            error: "你还没有关注"
+            return AltHttpResponse(json.dumps({"error": error}))
+
+
+class Followme(View):
+    # 查看所有关注自己的用户
+    def POST(self, request):
+        fans = []
+        user = request.user
+        if user.fan:
+            for i in user.fan.id:
+                fans = UserProfile.objects.get(id=id)
+                meg = {
+                    "username": fans.username,
+                    "gender": fans.username,
+                    "image": fans.image,
+                    "fans_num": fans.fans_num,
+                }
+                fans.append(meg)
+            return AltHttpResponse(json.dumps({fans}))
+        else:
+            error: "暂时还没有人关注你"
+            return AltHttpResponse(json.dumps({"error": error}))
+
+
+class UnFollow(View):
+    """
+    用户取消关注的Unfollow的类
+    """
+
+    def POST(self, request):
+        # 取消关注
+        user = request.user
+        user_id = request.POST.get("user_id", "")
+        follow = UserProfile.objects.filter(user_id=user_id)
+        if follow and user:
+            if follow.fans.id == user.id:
+                user.follow.remove(follow)
+                user.follow_num -= 1
+                follow.fans.remove(user)
+                follow.fans_num -= 1
+                return AltHttpResponse(json.dumps({"status": 'true'}))
+            else:
+                error: "没有关注该用户"
+                return AltHttpResponse(json.dumps({"error": error}))
+
+        else:
+            error = "该用户不存在"
+            return AltHttpResponse(json.dumps({"error": error}))
