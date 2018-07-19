@@ -368,6 +368,7 @@ class History(View):
                     "user": str,
                     "pattern": str,
                     "like": int,
+                    "cates": str,
                     "collection": int,
                     "height": int,
                     "width": int,
@@ -377,6 +378,7 @@ class History(View):
                     "image": str, (url)
                     "is-active": str,
                     "desc": str,
+                    "cates": str,
                     "user": str, (上传者用户名)
                     "pattern": str, (格式)
                     "like": int,
@@ -406,6 +408,7 @@ class History(View):
                 "desc": ship.image.desc,
                 "user": ship.image.user.username,
                 "pattern": ship.image.pattern,
+                "cates": ship.image.cates,
                 "like": ship.image.like_nums,
                 "collection": ship.image.collection_nums,
                 "height": ship.image.image.height,
@@ -420,6 +423,7 @@ class History(View):
                 "desc": image.desc,
                 "user": image.user.username,
                 "pattern": image.pattern,
+                "cates": image.cates,
                 "like": image.like_nums,
                 "collection": image.collection_nums,
                 "height": image.image.height,

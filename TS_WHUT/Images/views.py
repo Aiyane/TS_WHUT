@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.views.generic.base import View
 from django.http import QueryDict
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 import imghdr
 import json
 
@@ -121,6 +120,8 @@ class ImageView(View):
                     "user": str,
                     "pattern": str,
                     "like": int,
+                    "user-image": str, (用户头像)
+                    "cates": str,
                     "collection": int,
                     "height": int,
                     "width": int,
@@ -141,31 +142,29 @@ class ImageView(View):
             response.status_code = 400
             return response
 
-        paginator = Paginator(images, num)
-        try:
-            contacts = paginator.page(page)
-        except PageNotAnInteger:
-            # 不是合法正整数, 返回第一页.
-            contacts = paginator.page(1)
-        except EmptyPage:
-            # 超过页数, 返回空.
-            contacts = []
-
+        start = (page-1)*num
+        contacts = images[start: start+num]
         datas = []
         if contacts:
-            for image in contacts:
-                data = {
-                    "id": image.id,
-                    "image": image.image.url,
-                    "desc": image.desc,
-                    "user": image.user.username,
-                    "pattern": image.pattern,
-                    "like": image.like_nums,
-                    "collection": image.collection_nums,
-                    "height": image.image.height,
-                    "width": image.image.width,
-                }
-                datas.append(data)
+            try:
+                for image in contacts:
+                    user_url = image.user.image.url
+                    data = {
+                        "id": image.id,
+                        "image": image.image.url,
+                        "desc": image.desc,
+                        "user": image.user.username,
+                        "user-image": user_url,
+                        "pattern": image.pattern,
+                        "like": image.like_nums,
+                        "cates": image.cates,
+                        "collection": image.collection_nums,
+                        "height": image.image.height,
+                        "width": image.image.width,
+                    }
+                    datas.append(data)
+            except:
+                pass
         return AltHttpResponse(json.dumps(datas))
 
 
@@ -188,6 +187,7 @@ class ImageCateView(View):
                     "user": str,
                     "pattern": str,
                     "like": int,
+                    "cates": str,
                     "collection": int,
                     "height": int,
                     "width": int,
@@ -221,6 +221,7 @@ class ImageCateView(View):
                         "pattern": image.pattern,
                         "like": image.like_nums,
                         "collection": image.collection_nums,
+                        "cates": image.cates,
                         "height": image.image.height,
                         "width": image.image.width,
                     }
@@ -252,6 +253,7 @@ class ImagePattern(View):
                     "pattern": str,
                     "like": int,
                     "collection": int,
+                    "cates": str,
                     "height": int,
                     "width": int,
                 }
@@ -278,6 +280,7 @@ class ImagePattern(View):
                     "id": image.id,
                     "image": image.image.url,
                     "desc": image.desc,
+                    "cates": image.cates,
                     "user": image.user.username,
                     "pattern": image.pattern,
                     "like": image.like_nums,
@@ -314,6 +317,7 @@ class ImageUser(View):
                     "pattern": str,
                     "like": int,
                     "collection": int,
+                    "cates": str,
                     "height": int,
                     "width": int,
                 }
@@ -343,6 +347,7 @@ class ImageUser(View):
                     "desc": image.desc,
                     "user": image.user.username,
                     "pattern": image.pattern,
+                    "cates": image.cates,
                     "like": image.like_nums,
                     "collection": image.collection_nums,
                     "height": image.image.height,
@@ -374,6 +379,7 @@ class ImageLike(View):
                     "image": str,
                     "desc": str,
                     "user": str,
+                    "cates": str,
                     "pattern": str,
                     "like": int,
                     "collection": int,
@@ -403,6 +409,7 @@ class ImageLike(View):
                 "desc": image.desc,
                 "user": image.user.username,
                 "pattern": image.pattern,
+                "cates": image.cates,
                 "like": image.like_nums,
                 "collection": image.collection_nums,
                 "height": image.image.height,
@@ -486,6 +493,7 @@ class ImageCollect(View):
                     "desc": str,
                     "user": str,
                     "pattern": str,
+                    "cates": str,
                     "like": int,
                     "collection": int,
                     "height": int,
@@ -515,6 +523,7 @@ class ImageCollect(View):
                 "desc": image.desc,
                 "user": image.user.username,
                 "pattern": image.pattern,
+                "cates": image.cates,
                 "like": image.like_nums,
                 "collection": image.collection_nums,
                 "height": image.image.height,
