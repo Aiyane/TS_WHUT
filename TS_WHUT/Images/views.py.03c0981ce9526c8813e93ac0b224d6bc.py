@@ -571,22 +571,7 @@ class ImageCollect(View):
 
 class Banner(View):
     def get(self, request):
-        """
-        url:
-            /image/banner
-        method:
-            GET
-        success:
-            status_code: 200
-            json=[
-                "title": str,
-                "image": str, (src的url)
-                "target": str, (url)
-                "index": int
-            ]
-        """
         banners = BannerModel.objects.filter(if_show=True)
-        datas = []
         for banner in banners:
             data = {
                 "title": banner.title,
@@ -594,5 +579,3 @@ class Banner(View):
                 "target": banner.target,
                 "index": banner.index
             }
-            datas.append(data)
-        return AltHttpResponse(json.dumps(datas))

@@ -64,6 +64,7 @@ class BannerModel(models.Model):
     image = models.ImageField(upload_to="banner/%Y/%m",
                               verbose_name="轮播图", max_length=100)
     url = models.URLField(max_length=200, verbose_name="访问地址")
+    if_show = models.BooleanField(default=False, verbose_name="是否显示")
     index = models.IntegerField(default=100, verbose_name="顺序")
     add_time = models.DateField(default=datetime.now, verbose_name="添加时间")
 

@@ -26,7 +26,8 @@ import xadmin
 from operation.views import ActiveUserView, ResetView,  ModifyPwdView, CatesView
 from Users.views import (RegisterView, LoginView, GetUserMsgView,
                          LogoutView, History, FollowView, IsLogin, Following, FollowNum, FanNum)
-from Images.views import ImageView, ImageCateView, ImagePattern, ImageUser, ImageLike, ImageCollect
+from Images.views import (ImageView, ImageCateView,
+                          ImagePattern, ImageUser, ImageLike, ImageCollect, Banner)
 
 urlpatterns = [
     path('admin/', xadmin.site.urls),
@@ -40,7 +41,7 @@ urlpatterns = [
     path('user/follow/nums/', FollowNum.as_view(), name="follow_nums"),
     path('user/fan/nums/', FanNum.as_view(), name="fan_nums"),
     path('user/following/', Following.as_view(), name="following"),
-    path('user/is_login/', IsLogin.as_view(), name="is_login"),
+    path('user/islogin/', IsLogin.as_view(), name="is_login"),
 
     path('image/', ImageView.as_view(), name="image"),
     path('image/cate/', ImageCateView.as_view(), name="image_cate"),
@@ -48,10 +49,11 @@ urlpatterns = [
     path('image/user/', ImageUser.as_view(), name="image_like"),
     path('image/like/', ImageLike.as_view(), name="like"),
     path('image/collect/', ImageCollect.as_view(), name="collect"),
+    path('image/banner/', Banner.as_view(), name="Banner"),
 
-    path('active/<str:active_code>/',
-         ActiveUserView.as_view(), name="user_active"),
+    path('active/<str:active_code>/', ActiveUserView.as_view(), name="user_active"),
     path('cates/', CatesView.as_view(), name="cates"),
 ]
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
