@@ -590,8 +590,8 @@ class Banner(View):
         for banner in banners:
             data = {
                 "title": banner.title,
-                "image": banner.image,
-                "target": banner.target,
+                "image": banner.image.url,
+                "target": banner.url,
                 "index": banner.index
             }
             datas.append(data)
