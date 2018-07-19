@@ -467,7 +467,7 @@ success:
             "desc": str,
             "cates": str,
             "user": str,
-            "user-image": str, (用户头像)
+            "user_image": str, (用户头像)
             "pattern": str,
             "like": int,
             "collection": int,
@@ -489,6 +489,7 @@ method:
     GET 
 params:
     *:num (url)
+    *:page (分页)
 success:
     status_code: 200
     json=[
@@ -519,6 +520,7 @@ method:
     GET 
 params:
     *:num (url)
+    *:page (分页)
 success:
     status_code: 200
     json=[
@@ -550,6 +552,7 @@ method:
 params:
     *:num (url)
     *:id (用户id)
+    *:page (分页)
 success:
     status_code: 200
     json=[

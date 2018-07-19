@@ -120,7 +120,7 @@ class ImageView(View):
                     "user": str,
                     "pattern": str,
                     "like": int,
-                    "user-image": str, (用户头像)
+                    "user_image": str, (用户头像)
                     "cates": str,
                     "collection": int,
                     "height": int,
@@ -135,7 +135,7 @@ class ImageView(View):
         """
         num = int(request.GET.get("num"))
         page = int(request.GET.get("page"))
-        images = ImageModel.objects.filter(if_active=True).order_by("-add_time")
+        images = ImageModel.objects.filter(if_active=True)[::-1]
 
         if not num or not page:
             response = AltHttpResponse(json.dumps({"error": "参数错误"}))
@@ -154,7 +154,7 @@ class ImageView(View):
                         "image": image.image.url,
                         "desc": image.desc,
                         "user": image.user.username,
-                        "user-image": user_url,
+                        "user_image": user_url,
                         "pattern": image.pattern,
                         "like": image.like_nums,
                         "cates": image.cates,
@@ -177,6 +177,7 @@ class ImageCateView(View):
             GET 
         params:
             *:num (url)
+            *:page (分页)
         success:
             status_code: 200
             json=[
@@ -201,14 +202,16 @@ class ImageCateView(View):
         """
         name = request.GET.get("name")
         num = int(request.GET.get("num"))
-        if not num:
+        page = int(request.GET.get("page"))
+        if not num or not page:
             response = AltHttpResponse(json.dumps({"error": "参数错误"}))
             response.status_code = 400
             return response
 
         if name:
+            start = (page-1)*num
             groups = GroupImage.objects.filter(
-                name=name).order_by("-add_time")[:num]
+                name=name)[::-1][start:start+num]
             datas = []
             for group in groups:
                 image = group.image
@@ -242,6 +245,7 @@ class ImagePattern(View):
             GET 
         params:
             *:num (url)
+            *:page
         success:
             status_code: 200
             json=[
@@ -266,14 +270,16 @@ class ImagePattern(View):
         """
         pattern = request.GET.get("pattern")
         num = int(request.GET.get("num"))
-        if not num:
+        page = int(request.GET.get("page"))
+        if not num or page:
             response = AltHttpResponse(json.dumps({"error": "参数错误"}))
             response.status_code = 400
             return response
 
         if pattern:
-            images = ImageModel.objects.filter(
-                pattern=pattern, if_active=True).order_by("-add_time")[:num]
+            start = (page-1)*num
+            images = ImageModel.objects.filter(pattern=pattern, 
+                                               if_active=True)[::-1][start:start+num]
             datas = []
             for image in images:
                 data = {
@@ -306,6 +312,7 @@ class ImageUser(View):
         params:
             *:num (url)
             *:id (用户id)
+            *:page
         success:
             status_code: 200
             json=[
@@ -330,15 +337,17 @@ class ImageUser(View):
         """
         user_id = request.GET.get("id")
         num = int(request.GET.get("num"))
-        if not num:
+        page = int(request.GET.get("page"))
+        if not num or not page:
             response = AltHttpResponse(json.dumps({"error": "参数错误"}))
             response.status_code = 400
             return response
 
         if user_id:
             user = UserProfile.objects.get(id=user_id)
-            images = ImageModel.objects.filter(
-                user=user, if_active=True).order_by("-add_time")[:num]
+            start = (page-1)*num
+            images = ImageModel.objects.filter(user=user,
+                                               if_active=True).order_by[::-1][start:start+num]
             datas = []
             for image in images:
                 data = {
