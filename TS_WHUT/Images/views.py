@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic.base import View
 from django.http import QueryDict
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 import imghdr
 import json
 
@@ -109,6 +110,7 @@ class ImageView(View):
             GET 
         params:
             *:num (url)
+            *:page (分页)
         success:
             status_code: 200
             json=[
@@ -131,11 +133,27 @@ class ImageView(View):
             }
         """
         num = int(request.GET.get("num"))
-        if num:
-            images = ImageModel.objects.filter(
-                if_active=True).order_by("-add_time")[:num]
-            datas = []
-            for image in images:
+        page = int(request.GET.get("page"))
+        images = ImageModel.objects.filter(if_active=True).order_by("-add_time")
+
+        if not num or not page:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+
+        paginator = Paginator(images, num)
+        try:
+            contacts = paginator.page(page)
+        except PageNotAnInteger:
+            # 不是合法正整数, 返回第一页.
+            contacts = paginator.page(1)
+        except EmptyPage:
+            # 超过页数, 返回空.
+            contacts = []
+
+        datas = []
+        if contacts:
+            for image in contacts:
                 data = {
                     "id": image.id,
                     "image": image.image.url,
@@ -148,11 +166,7 @@ class ImageView(View):
                     "width": image.image.width,
                 }
                 datas.append(data)
-            return AltHttpResponse(json.dumps(datas))
-        else:
-            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
-            response.status_code = 400
-            return response
+        return AltHttpResponse(json.dumps(datas))
 
 
 class ImageCateView(View):
