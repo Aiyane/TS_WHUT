@@ -44,7 +44,7 @@
 ### 登录状态获得用户信息
 ```
 url:
-    /user
+    /user/
 method:
     GET
 success:
@@ -66,35 +66,34 @@ failure:
 ### 注册新用户
 ```
 url:
-    /user
+    /user/
 method:
     POST
 params:
     *:username (formData)
     *:password (formData)
     *:email (formData)
-ret:
-    success:
-        status_code=200
-        json={
-            "status": "true",
-            "message": "请前往邮箱验证"
-        }
-    failure:
-        status_code=400
-        json={
-            "error": "邮箱已被注册"
-        }
-    failure:
-        status_code=400
-        json={
-            "error": "用户名已经存在"
-        }
+success:
+    status_code=200
+    json={
+        "status": "true",
+        "message": "请前往邮箱验证"
+    }
+failure:
+    status_code=400
+    json={
+        "error": "邮箱已被注册"
+    }
+failure:
+    status_code=400
+    json={
+        "error": "用户名已经存在"
+    }
 ```
 ### 删除用户
 ```
 url:
-    /user
+    /user/
 method:
     DELETE
 success:
@@ -111,7 +110,7 @@ failure:
 ### 修改用户信息
 ```
 url:
-    /user
+    /user/
 method:
     PUT 
 params:
@@ -151,7 +150,7 @@ failure:
 ### 登录
 ```
 url:
-    /user/login
+    /user/login/
 method:
     POST
 params:
@@ -176,7 +175,7 @@ failure:
 ### 非登录状态获取用户信息
 ```
 url:
-    /user/msg/<username>
+    /user/msg/<username>/
 method:
     GET
 params:
@@ -199,7 +198,7 @@ failure:
 ### 登出
 ```
 url:
-    /user/logout
+    /user/logout/
 method:
     POST
 success:
@@ -216,7 +215,7 @@ failure:
 ### 获取用户上传_下载记录_按照时间倒序
 ```
 url:
-    /user/logout
+    /user/logout/
 method:
     POST
 params:
@@ -257,7 +256,7 @@ failure:
 ### 查询粉丝名单
 ```
 url:
-    /user/follow
+    /user/follow/
 method:
     GET
 success:
@@ -279,7 +278,7 @@ failure:
 ### 关注他人
 ```
 url:
-    /user/follow
+    /user/follow/
 method:
     POST
 params:
@@ -303,7 +302,7 @@ failure:
 ### 取消关注
 ```
 url:
-    /user/follow
+    /user/follow/
 method:
     DELETE
 params:
@@ -327,7 +326,7 @@ failure:
 ### 已关注哪些人
 ```
 url:
-    /user/following
+    /user/following/
 method:
     GET
 success:
@@ -401,7 +400,7 @@ failure:
 ### 上传图片
 ```
 url:
-    /image
+    /image/
 method:
     POST
 params:
@@ -427,7 +426,7 @@ failure:
 ### 删除图片
 ```
 url:
-    /image
+    /image/
 method:
     DELETE
 params:
@@ -451,7 +450,7 @@ failure:
 ### 获得一定数量的图片_按时间倒序
 ```
 url:
-    /image
+    /image/
 method:
     GET 
 params:
@@ -480,7 +479,7 @@ failure:
 ### 获取一定数量的图片_按图片种类_时间倒序
 ```
 url:
-    /image/cate
+    /image/cate/
 method:
     GET 
 params:
@@ -509,7 +508,7 @@ failure:
 ### 获取一定数量的图片_按图片格式_时间倒序
 ```
 url:
-    /image/pattern
+    /image/pattern/
 method:
     GET 
 params:
@@ -538,7 +537,7 @@ failure:
 ### 获取一定数量的图片_按上传者_时间倒序
 ```
 url:
-    /image/user
+    /image/user/
 method:
     GET 
 params:
@@ -568,7 +567,7 @@ failure:
 ### 登录状态下获取一定数量的已点赞的图片
 ```
 url:
-    /image/like
+    /image/like/
 method:
     GET 
 params:
@@ -597,7 +596,7 @@ failure:
 ### 点赞某图片
 ```
 url:
-    /image/like
+    /image/like/
 method:
     POST
 success:
@@ -614,7 +613,7 @@ failure:
 ### 取消点赞
 ```
 url:
-    /image/like
+    /image/like/
 method:
     DELETE 
 success:
@@ -631,7 +630,7 @@ failure:
 ### 登录状态下获取一定数量的已收藏的图片收藏
 ```
 url:
-    /image/collect
+    /image/collect/
 method:
     GET 
 params:
@@ -660,7 +659,7 @@ failure:
 ### 收藏某图片
 ```
 url:
-    /image/collect
+    /image/collect/
 method:
     POST
 params:
@@ -679,7 +678,7 @@ failure:
 ### 取消收藏
 ```
 url:
-    /image/collect
+    /image/collect/
 method:
     DELETE
 params:
@@ -698,7 +697,7 @@ failure:
 ### 获取轮播图
 ```
 url:
-    /image/banner
+    /image/banner/
 method:
     GET
 success:
@@ -714,7 +713,7 @@ success:
 ### 获取一定数量的类别名
 ```
 url:
-    /cates
+    /cates/
 method:
     GET
 params:
