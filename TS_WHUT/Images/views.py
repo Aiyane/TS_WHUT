@@ -49,6 +49,9 @@ class ImageView(View):
         cate_str = request.POST.get("cates")
         image = ImageModel(image=image, desc=desc, user=user, cates=cate_str)
         image.save()
+        user = request.user
+        user.upload_nums += 1
+        user.save()
         pattern = imghdr.what(image.image.path)
         image.pattern = pattern
         image.save()
@@ -88,6 +91,9 @@ class ImageView(View):
         put = QueryDict(request.body)
         image_id = put.get("image-id")
         image = ImageModel.objects.get(id=image_id)
+        user = request.user
+        user.upload_nums -= 1
+        user.save()
         if image:
             if image.user == request.user:
                 image.delete()
@@ -125,6 +131,7 @@ class ImageView(View):
                     "collection": int,
                     "height": int,
                     "width": int,
+                    "download_nums": int
                 }
             ]
         failure:
@@ -151,7 +158,7 @@ class ImageView(View):
                     user_url = image.user.image.url
                     data = {
                         "id": image.id,
-                        "image": image.image.url,
+                        "image": image.image['avatar'].url,  # 缩略图
                         "desc": image.desc,
                         "user": image.user.username,
                         "user_image": user_url,
@@ -161,6 +168,7 @@ class ImageView(View):
                         "collection": image.collection_nums,
                         "height": image.image.height,
                         "width": image.image.width,
+                        "download_nums": image.download_nums
                     }
                     datas.append(data)
             except:
@@ -192,6 +200,7 @@ class ImageCateView(View):
                     "collection": int,
                     "height": int,
                     "width": int,
+                    "download_nums": int
                 }
             ]
         failure:
@@ -218,7 +227,7 @@ class ImageCateView(View):
                 if image.if_active:
                     data = {
                         "id": image.id,
-                        "image": image.image.url,
+                        "image": image.image['avatar'].url,  # 缩略图
                         "desc": image.desc,
                         "user": image.user.username,
                         "pattern": image.pattern,
@@ -227,6 +236,7 @@ class ImageCateView(View):
                         "cates": image.cates,
                         "height": image.image.height,
                         "width": image.image.width,
+                        "download_nums": image.download_nums
                     }
                     datas.append(data)
             return AltHttpResponse(json.dumps(datas))
@@ -260,6 +270,7 @@ class ImagePattern(View):
                     "cates": str,
                     "height": int,
                     "width": int,
+                    "download_nums": int
                 }
             ]
         failure:
@@ -278,13 +289,13 @@ class ImagePattern(View):
 
         if pattern:
             start = (page-1)*num
-            images = ImageModel.objects.filter(pattern=pattern, 
+            images = ImageModel.objects.filter(pattern=pattern,
                                                if_active=True)[::-1][start:start+num]
             datas = []
             for image in images:
                 data = {
                     "id": image.id,
-                    "image": image.image.url,
+                    "image": image.image['avatar'].url,  # 缩略图
                     "desc": image.desc,
                     "cates": image.cates,
                     "user": image.user.username,
@@ -293,6 +304,7 @@ class ImagePattern(View):
                     "collection": image.collection_nums,
                     "height": image.image.height,
                     "width": image.image.width,
+                    "download_nums": image.download_nums
                 }
                 datas.append(data)
             return AltHttpResponse(json.dumps(datas))
@@ -327,6 +339,7 @@ class ImageUser(View):
                     "cates": str,
                     "height": int,
                     "width": int,
+                    "download_nums": int
                 }
             ]
         failure:
@@ -352,7 +365,7 @@ class ImageUser(View):
             for image in images:
                 data = {
                     "id": image.id,
-                    "image": image.image.url,
+                    "image": image.image['avatar'].url,  # 缩略图
                     "desc": image.desc,
                     "user": image.user.username,
                     "pattern": image.pattern,
@@ -361,6 +374,7 @@ class ImageUser(View):
                     "collection": image.collection_nums,
                     "height": image.image.height,
                     "width": image.image.width,
+                    "download_nums": image.download_nums
                 }
                 datas.append(data)
             return AltHttpResponse(json.dumps(datas))
@@ -394,12 +408,18 @@ class ImageLike(View):
                     "collection": int,
                     "height": int,
                     "width": int,
+                    "download_nums": int
                 }
             ]
         failure:
             status_code: 400
             json={
                 "error": "参数错误"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
             }
         """
         user = request.user
@@ -423,6 +443,7 @@ class ImageLike(View):
                 "collection": image.collection_nums,
                 "height": image.image.height,
                 "width": image.image.width,
+                "download_nums": image.download_nums
             }
             datas.append(data)
         return AltHttpResponse(json.dumps(datas))
@@ -444,13 +465,20 @@ class ImageLike(View):
             json={
                 "error": "参数错误"
             }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
         """
         user = request.user
         image_id = request.POST.get("image-id")
         if image_id:
             image = ImageModel.objects.get(id=image_id)
+            image.like_nums += 1
             like = LikeShip(user=user, image=image)
             like.save()
+            image.save()
             return AltHttpResponse(json.dumps({"status": "true"}))
         else:
             response = AltHttpResponse(json.dumps({"error": "参数错误"}))
@@ -474,11 +502,18 @@ class ImageLike(View):
             json={
                 "error": "参数错误"
             }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
         """
         user = request.user
         put = QueryDict(request.body)
         image_id = put.get("image-id")
         image = ImageModel.objects.get(id=image_id)
+        image.like_nums -= 1
+        image.save()
         LikeShip.objects.filter(user=user, image=image)[0].delete()
         return AltHttpResponse(json.dumps({"status": "true"}))
 
@@ -507,12 +542,18 @@ class ImageCollect(View):
                     "collection": int,
                     "height": int,
                     "width": int,
+                    "download_nums": int,
                 }
             ]
         failure:
             status_code: 400
             json={
                 "error": "参数错误"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
             }
         """
         user = request.user
@@ -537,6 +578,7 @@ class ImageCollect(View):
                 "collection": image.collection_nums,
                 "height": image.image.height,
                 "width": image.image.width,
+                "download_nums": image.download_nums,
             }
             datas.append(data)
         return AltHttpResponse(json.dumps(datas))
@@ -560,11 +602,18 @@ class ImageCollect(View):
             json={
                 "error": "参数错误"
             }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
         """
         user = request.user
         image_id = request.POST.get("image-id")
         if image_id:
             image = ImageModel.objects.get(id=image_id)
+            image.collection_nums += 1
+            image.save()
             collect = Collection(user=user, image=image)
             collect.save()
             return AltHttpResponse(json.dumps({"status": "true"}))
@@ -597,6 +646,8 @@ class ImageCollect(View):
         put = QueryDict(request.body)
         image_id = put.get("image-id")
         image = ImageModel.objects.get(id=image_id)
+        image.collection_nums -= 1
+        image.save()
         Collection.objects.filter(user=user, image=image)[0].delete()
         return AltHttpResponse(json.dumps({"status": "true"}))
 
@@ -611,10 +662,12 @@ class Banner(View):
         success:
             status_code: 200
             json=[
-                "title": str,
-                "image": str, (src的url)
-                "target": str, (url)
-                "index": int
+                {
+                    "title": str,
+                    "image": str, (src的url)
+                    "target": str, (url)
+                    "index": int
+                }
             ]
         """
         banners = BannerModel.objects.filter(if_show=True)
@@ -628,3 +681,60 @@ class Banner(View):
             }
             datas.append(data)
         return AltHttpResponse(json.dumps(datas))
+
+
+class Download(View):
+    @is_login
+    def get(self, request):
+        """
+        url:
+            /image/download
+        method:
+            GET
+        params:
+            *:id (图片id)
+        success:
+            status_code: 200
+            json={
+               "id": int,
+                "image": str,
+                "desc": str,
+                "user": str,
+                "pattern": str,
+                "like": int,
+                "user_image": str, (用户头像)
+                "cates": str,
+                "collection": int,
+                "height": int,
+                "width": int,
+                "download": int (下载量)
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "参数错误"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        image_id = request.GET.get("id")
+        image = ImageModel.objects.get(id=image_id)
+        data = {
+            "id": image.id,
+            "image": image.image.url,
+            "desc": image.desc,
+            "user": image.user.username,
+            "user_image": user_url,
+            "pattern": image.pattern,
+            "like": image.like_nums,
+            "cates": image.cates,
+            "collection": image.collection_nums,
+            "height": image.image.height,
+            "width": image.image.width,
+            "download_nums": image.download_nums,
+        }
+        image.download_nums += 1
+        return AltHttpResponse(json.dumps(data))

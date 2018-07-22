@@ -39,6 +39,9 @@ class RegisterView(View):
                 "gender": str, (male或female)
                 "image": str, (url)
                 "birthday": data,
+                "upload_nums": int, (上传数)
+                "fan_nums": int, (粉丝数)
+                "follow_nums": int (关注者数)
             }
         failure:
             status_code: 404
@@ -54,6 +57,9 @@ class RegisterView(View):
             "gender": user.gender,
             "image": user.image.url,
             "birthday": user.birthday,
+            "upload_nums": user.upload_nums,
+            "fan_nums": user.fan_nums,
+            "follow_nums": user.follow_nums,
         }
         return AltHttpResponse(json.dumps(data))
 
@@ -301,6 +307,8 @@ class GetUserMsgView(View):
                 "email": str,
                 "gender": str, (male或female)
                 "image": str, (url)
+                "fan_nums": int,
+                "follow_nums": int,
             }
         failure:
             status_code: 400
@@ -316,6 +324,8 @@ class GetUserMsgView(View):
                 "email": user.email,
                 "image": user.image.url,
                 "gender": user.gender,
+                "fan_nums": user.fan_nums,
+                "follow_nums": user.follow_nums,
             }
             return AltHttpResponse(json.dumps(data))
         else:
@@ -348,16 +358,126 @@ class LogoutView(View):
         return AltHttpResponse(json.dumps({"status": "true"}))
 
 
+class UserDownload(View):
+    @is_login
+    def get(self, request):
+        """
+        url:
+            /user/download
+        method:
+            GET
+        params:
+            *:num
+        success:
+            status_code: 200
+            json={
+                "id": int,
+                "image": str,
+                "desc": str,
+                "user": str,
+                "pattern": str,
+                "cates": str,
+                "like": int,
+                "collection": int,
+                "height": int,
+                "width": int,
+                "download_nums": int,
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        user = request.user
+        num = int(request.POST.get("num"))
+        ships = DownloadShip.objects.filter(
+            user=user).order_by("-add_time")[:num]
+        download_images = []
+        upload_images = []
+        for ship in ships:
+            data = {
+                "id": ship.image.id,
+                "image": ship.image.image.url,
+                "desc": ship.image.desc,
+                "user": ship.image.user.username,
+                "pattern": ship.image.pattern,
+                "cates": ship.image.cates,
+                "like": ship.image.like_nums,
+                "collection": ship.image.collection_nums,
+                "height": ship.image.image.height,
+                "width": ship.image.image.width,
+                "download_nums": ship.image.download_nums,
+            }
+            download_images.append(data)
+        return AltHttpResponse(json.dumps(download_images))
+
+
+class UserUpload(View):
+    @is_login
+    def get(self, request):
+        """
+        url:
+            /user/upload
+        method:
+            GET
+        params:
+            *:num
+        success:
+            status_code: 200
+            json={
+                "id": int,
+                "image": str,
+                "desc": str,
+                "user": str,
+                "pattern": str,
+                "cates": str,
+                "like": int,
+                "collection": int,
+                "height": int,
+                "width": int,
+                "download_nums": int,
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        user = request.user
+        num = int(request.POST.get("num"))
+        images = ImageModel.objects.filter(
+            user=user).order_by("-add_time")[:num]
+        upload_images = []
+        for image in images:
+            data = {
+                "id": image.id,
+                "image": image.image.url,
+                "is_active": image.if_active,
+                "desc": image.desc,
+                "user": image.user.username,
+                "pattern": image.pattern,
+                "cates": image.cates,
+                "like": image.like_nums,
+                "collection": image.collection_nums,
+                "height": image.image.height,
+                "width": image.image.width,
+                "download_nums": ship.image.download_nums,
+            }
+            upload_images.append(data)
+        return AltHttpResponse(json.dumps(upload_images))
+
+
 class History(View):
     @is_login
     def post(self, request):
         """ 按照时间倒序
         url:
-            /user/logout
+            /user/history
         method:
             POST
         params:
-            :num (formData)
+            *:num (formData)
         success:
             status_code: 200
             json={
@@ -372,6 +492,7 @@ class History(View):
                     "collection": int,
                     "height": int,
                     "width": int,
+                    "download_nums": int
                 },
                 "upload-images":{
                     "id": int,
@@ -385,6 +506,7 @@ class History(View):
                     "collection": int,
                     "height": int,
                     "width": int,
+                    "download_nums": int
                 }
             }
         failure:
@@ -413,13 +535,14 @@ class History(View):
                 "collection": ship.image.collection_nums,
                 "height": ship.image.image.height,
                 "width": ship.image.image.width,
+                "download_nums": ship.image.download_nums,
             }
             download_images.append(data)
         for image in images:
             data = {
                 "id": image.id,
                 "image": image.image.url,
-                "is-active": image.is_active,
+                "is_active": image.if_active,
                 "desc": image.desc,
                 "user": image.user.username,
                 "pattern": image.pattern,
@@ -428,9 +551,10 @@ class History(View):
                 "collection": image.collection_nums,
                 "height": image.image.height,
                 "width": image.image.width,
+                "download_nums": ship.image.download_nums,
             }
             upload_images.append(data)
-        return AltHttpResponse(json.dumps({"download-images": download_images, "upload-images": upload_images}))
+        return AltHttpResponse(json.dumps({"download_images": download_images, "upload_images": upload_images}))
 
 
 class FollowView(View):

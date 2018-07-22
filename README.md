@@ -16,6 +16,8 @@
     - [非登录状态获取用户信息](#非登录状态获取用户信息)
     - [登出](#登出)
     - [获取用户上传,下载记录,按照时间倒序](#获取用户上传_下载记录_按照时间倒序)
+    - [获取用户一定数量下载的图片](#获取用户一定数量下载的图片)
+    - [获取用户一定数量的上传图片](#获取用户一定数量的上传图片)
     - [查询粉丝名单](#查询粉丝名单)
     - [关注他人](#关注他人)
     - [取消关注](#取消关注)
@@ -26,10 +28,10 @@
 - [图片操作](#图片操作)
     - [上传图片](#上传图片)
     - [删除图片](#删除图片)
-    - [获得一定数量的图片,按时间倒序](#获得一定数量的图片_按时间倒序)
-    - [获取一定数量的图片,按图片种类,时间倒序](#获取一定数量的图片_按图片种类_时间倒序)
-    - [获取一定数量的图片,按图片格式,时间倒序](#获取一定数量的图片_按图片格式_时间倒序)
-    - [获取一定数量的图片,按上传者,时间倒序](#获取一定数量的图片_按上传者_时间倒序)
+    - [获得一定数量的缩略图片_按时间倒序](#获得一定数量的缩略图片_按时间倒序)
+    - [获取一定数量的缩略图片_按图片种类_时间倒序](#获取一定数量的缩略图片_按图片种类_时间倒序)
+    - [获取一定数量的缩略图片_按图片格式_时间倒序](#获取一定数量的缩略图片_按图片格式_时间倒序)
+    - [获取一定数量的缩略图片_按上传者_时间倒序](#获取一定数量的缩略图片_按上传者_时间倒序)
     - [登录状态下获取一定数量的已点赞的图片](#登录状态下获取一定数量的已点赞的图片)
     - [点赞某图片](#点赞某图片)
     - [取消点赞](#取消点赞)
@@ -37,6 +39,7 @@
     - [收藏某图片](#收藏某图片)
     - [取消收藏](#取消收藏)
     - [获取轮播图](#获取轮播图)
+    - [下载原图](#下载原图)
 - [其他](#其他)
     - [获取一定数量的类别名](#获取一定数量的类别名)
 
@@ -56,6 +59,9 @@ success:
         "gender": str, (male或female)
         "image": str, (url)
         "birthday": data,
+        "upload_nums": int, (上传数)
+        "fan_nums": int, (粉丝数)
+        "follow_nums": int (关注者数)
     }
 failure:
     status_code: 404
@@ -188,6 +194,8 @@ success:
         "email": str,
         "gender": str, (male或female)
         "image": str, (url)
+        "fan_nums": int,
+        "follow_nums": int,
     }
 failure:
     status_code: 400
@@ -215,15 +223,16 @@ failure:
 ### 获取用户上传_下载记录_按照时间倒序
 ```
 url:
-    /user/logout/
+    /user/history/
 method:
     POST
 params:
-    :num (formData)
+    *:num (formData)
 success:
     status_code: 200
     json={
-        "download-images":{
+        "download-images":[
+            {
             "id": int,
             "image": str, (url)
             "desc": str,
@@ -234,8 +243,11 @@ success:
             "cates": str,
             "height": int,
             "width": int,
-        },
-        "upload-images":{
+            "download_nums": int
+            }
+        ],
+        "upload-images":[
+            {
             "id": int,
             "image": str, (url)
             "is-active": str,
@@ -247,7 +259,67 @@ success:
             "collection": int,
             "height": int,
             "width": int,
-        }
+            "download_nums": int
+            }
+        ]
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+```
+### 获取用户一定数量下载的图片
+```
+url:
+    /user/download
+method:
+    GET
+params:
+    *:num
+success:
+    status_code: 200
+    json={
+        "id": int,
+        "image": str,
+        "desc": str,
+        "user": str,
+        "pattern": str,
+        "cates": str,
+        "like": int,
+        "collection": int,
+        "height": int,
+        "width": int,
+        "download_nums": int,
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+```
+### 获取用户一定数量的上传图片
+```
+url:
+    /user/upload
+method:
+    GET
+params:
+    *:num
+success:
+    status_code: 200
+    json={
+        "id": int,
+        "image": str,
+        "desc": str,
+        "user": str,
+        "pattern": str,
+        "cates": str,
+        "like": int,
+        "collection": int,
+        "height": int,
+        "width": int,
+        "download_nums": int,
     }
 failure:
     status_code: 404
@@ -449,7 +521,7 @@ failure:
         "error": "没有图片文件"
     }
 ```
-### 获得一定数量的图片_按时间倒序
+### 获得一定数量的缩略图片_按时间倒序
 ```
 url:
     /image/
@@ -473,6 +545,7 @@ success:
             "collection": int,
             "height": int,
             "width": int,
+            "download_nums": int
         }
     ]
 failure:
@@ -481,7 +554,7 @@ failure:
         "error": "参数错误"
     }
 ```
-### 获取一定数量的图片_按图片种类_时间倒序
+### 获取一定数量的缩略图片_按图片种类_时间倒序
 ```
 url:
     /image/cate/
@@ -504,6 +577,7 @@ success:
             "collection": int,
             "height": int,
             "width": int,
+            "download_nums": int
         }
     ]
 failure:
@@ -512,7 +586,7 @@ failure:
         "error": "参数错误"
     }
 ```
-### 获取一定数量的图片_按图片格式_时间倒序
+### 获取一定数量的缩略图片_按图片格式_时间倒序
 ```
 url:
     /image/pattern/
@@ -535,6 +609,7 @@ success:
             "collection": int,
             "height": int,
             "width": int,
+            "download_nums": int
         }
     ]
 failure:
@@ -543,7 +618,7 @@ failure:
         "error": "参数错误"
     }
 ```
-### 获取一定数量的图片_按上传者_时间倒序
+### 获取一定数量的缩略图片_按上传者_时间倒序
 ```
 url:
     /image/user/
@@ -567,6 +642,7 @@ success:
             "collection": int,
             "height": int,
             "width": int,
+            "download_nums": int
         }
     ]
 failure:
@@ -597,6 +673,7 @@ success:
             "collection": int,
             "height": int,
             "width": int,
+            "download_nums": int
         }
     ]
 failure:
@@ -661,6 +738,7 @@ success:
             "collection": int,
             "height": int,
             "width": int,
+            "download_nums": int,
         }
     ]
 failure:
@@ -721,6 +799,41 @@ success:
         "target": str, (url)
         "index": int
     ]
+```
+### 下载原图
+```
+url:
+    /image/download
+method:
+    GET
+params:
+    *:id (图片id)
+success:
+    status_code: 200
+    json={
+        "id": int,
+        "image": str,
+        "desc": str,
+        "user": str,
+        "pattern": str,
+        "like": int,
+        "user_image": str, (用户头像)
+        "cates": str,
+        "collection": int,
+        "height": int,
+        "width": int,
+        "download": int (下载量)
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "参数错误"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
 ```
 ## 其他
 ### 获取一定数量的类别名

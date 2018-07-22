@@ -18,9 +18,9 @@ from django.conf.urls.static import static
 from django.conf import settings
 import xadmin
 from operation.views import ActiveUserView, CatesView
-from Users.views import (RegisterView, LoginView, GetUserMsgView,
+from Users.views import (RegisterView, LoginView, GetUserMsgView, UserDownload, UserUpload
                          LogoutView, History, FollowView, IsLogin, Following, FollowNum, FanNum)
-from Images.views import (ImageView, ImageCateView,
+from Images.views import (ImageView, ImageCateView, Download
                           ImagePattern, ImageUser, ImageLike, ImageCollect, Banner)
 
 urlpatterns = [
@@ -36,6 +36,8 @@ urlpatterns = [
     path('user/fan/nums/', FanNum.as_view(), name="fan_nums"),
     path('user/following/', Following.as_view(), name="following"),
     path('user/islogin/', IsLogin.as_view(), name="is_login"),
+    path('user/download', UserDownload.as_view(), name="user_download"),
+    path('user/upload', UserUpload.as_view(), name="user_upload"),
 
     path('image/', ImageView.as_view(), name="image"),
     path('image/cate/', ImageCateView.as_view(), name="image_cate"),
@@ -44,6 +46,7 @@ urlpatterns = [
     path('image/like/', ImageLike.as_view(), name="like"),
     path('image/collect/', ImageCollect.as_view(), name="collect"),
     path('image/banner/', Banner.as_view(), name="Banner"),
+    path('image/download', Download.as_view(), name="download"),
 
     path('active/<str:active_code>/', ActiveUserView.as_view(), name="user_active"),
     path('cates/', CatesView.as_view(), name="cates"),

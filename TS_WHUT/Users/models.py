@@ -4,6 +4,10 @@
 from django.db import models
 from datetime import datetime  # 导入当前时间
 from django.contrib.auth.models import AbstractUser  # 这个model是数据库默认的user
+from utils.storage import ImageStorage
+from easy_thumbnails.fields import ThumbnailerImageField
+from PIL import Image, ImageDraw, ImageFont
+from TS_WHUT.settings import LOGO_ROOT, BASE_DIR
 
 
 class EmailVerifyRecord(models.Model):
@@ -33,10 +37,11 @@ class UserProfile(AbstractUser):
     number = models.CharField(max_length=20, verbose_name="学号",
                               null=True, blank=True)
     image = models.ImageField(upload_to="heads/%Y/%m", default="heads/default.png",
-                              max_length=100, verbose_name="头像")
+                              storage=ImageStorage(), max_length=100, verbose_name="头像")
     if_sign = models.BooleanField(verbose_name="签约", default=False)
     follow_nums = models.IntegerField(verbose_name="关注者量", default=0)
     fan_nums = models.IntegerField(verbose_name="粉丝量", default=0)
+    upload_nums = models.IntegerField(verbose_name="上传量", default=0)
 
     class Meta:
         verbose_name = "用户信息"
@@ -61,7 +66,7 @@ class Follow(models.Model):
 class BannerModel(models.Model):
     # 轮播图
     title = models.CharField(max_length=100, verbose_name="标题")
-    image = models.ImageField(upload_to="banner/%Y/%m",
+    image = models.ImageField(upload_to="banner/%Y/%m", storage=ImageStorage(),
                               verbose_name="轮播图", max_length=100)
     url = models.URLField(max_length=200, verbose_name="访问地址")
     if_show = models.BooleanField(default=False, verbose_name="是否显示")
@@ -78,8 +83,8 @@ class BannerModel(models.Model):
 
 class ImageModel(models.Model):
     # 图片
-    image = models.ImageField(upload_to="images/%Y/%m",
-                              verbose_name="图片", max_length=100, null=True, blank=True)
+    image = ThumbnailerImageField(upload_to="images/%Y/%m", storage=ImageStorage(),
+                                  verbose_name="图片", max_length=100, null=True, blank=True)
     add_time = models.DateField(default=datetime.now, verbose_name="添加时间")
     if_active = models.BooleanField(default=False, verbose_name="是否通过审核")
     desc = models.CharField(max_length=200, verbose_name="描述",
@@ -90,6 +95,7 @@ class ImageModel(models.Model):
     like_nums = models.IntegerField(default=0, verbose_name="点赞数")
     cates = models.CharField(max_length=200, verbose_name="种类字符串", default="")
     collection_nums = models.IntegerField(default=0, verbose_name="收藏数")
+    download_nums = models.IntegerField(default=0, verbose_name="下载量")
 
     class Meta:
         verbose_name = "图片"
