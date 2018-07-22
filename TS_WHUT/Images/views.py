@@ -470,11 +470,20 @@ class ImageLike(View):
             json={
                 "error": "用户未登录"
             }
+        failure:
+            status_code: 404
+            json={
+                "error": "图片未审查"
+            }
         """
         user = request.user
         image_id = request.POST.get("image-id")
         if image_id:
             image = ImageModel.objects.get(id=image_id)
+            if not image.if_active:
+                response = AltHttpResponse(json.dumps({"error": "图片未审查"}))
+                response.status_code = 404
+                return response
             image.like_nums += 1
             like = LikeShip(user=user, image=image)
             like.save()
@@ -607,11 +616,20 @@ class ImageCollect(View):
             json={
                 "error": "用户未登录"
             }
+        failure:
+            status_code: 404
+            json={
+                "error": "图片未审查"
+            }
         """
         user = request.user
         image_id = request.POST.get("image-id")
         if image_id:
             image = ImageModel.objects.get(id=image_id)
+            if not image.if_active:
+                response = AltHttpResponse(json.dumps({"error": "图片未审查"}))
+                response.status_code = 404
+                return response
             image.collection_nums += 1
             image.save()
             collect = Collection(user=user, image=image)
@@ -719,13 +737,22 @@ class Download(View):
             json={
                 "error": "用户未登录"
             }
+        failure:
+            status_code: 404
+            json={
+                "error": "图片未审查"
+            }
         """
         image_id = int(request.GET.get("id"))
-        if not iamge_id:
+        if not image_id:
             response = AltHttpResponse(json.dumps({"error": "参数错误"}))
             response.status_code = 400
             return response
         image = ImageModel.objects.get(id=image_id)
+        if not image.if_active:
+            response = AltHttpResponse(json.dumps({"error": "图片未审查"}))
+            response.status_code = 404
+            return response
         data = {
             "id": image.id,
             "image": image.image.url,
@@ -773,6 +800,11 @@ class GetImage(View):
             json={
                 "error": "参数错误"
             }
+        failure:
+            status_code: 404
+            json={
+                "error": "图片未审查"
+            }
         """
         iamge_id = int(request.GET.get('id'))
         if not iamge_id:
@@ -780,6 +812,10 @@ class GetImage(View):
             response.status_code = 400
             return response
         image = ImageModel.objects.get(id=iamge_id)       
+        if not image.if_active:
+            response = AltHttpResponse(json.dumps({"error": "图片未审查"}))
+            response.status_code = 404
+            return response
         data = {
             "id": image.id,
             "image": image.image['replace'].url,

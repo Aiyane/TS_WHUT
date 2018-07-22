@@ -234,7 +234,7 @@ params:
 success:
     status_code: 200
     json={
-        "download-images":[
+        "download_images":[
             {
             "id": int,
             "image": str, (url)
@@ -249,11 +249,11 @@ success:
             "download_nums": int
             }
         ],
-        "upload-images":[
+        "upload_images":[
             {
             "id": int,
             "image": str, (url)
-            "is-active": str,
+            "is_active": str,
             "desc": str,
             "user": str, (上传者用户名)
             "pattern": str, (格式)
@@ -701,6 +701,11 @@ failure:
     json={
         "error": "参数错误"
     }
+failure:
+    status_code: 404
+    json={
+        "error": "图片未审查"
+    }
 ```
 ### 取消点赞
 ```
@@ -767,6 +772,11 @@ failure:
     status_code: 400
     json={
         "error": "参数错误"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "图片未审查"
     }
 ```
 ### 取消收藏

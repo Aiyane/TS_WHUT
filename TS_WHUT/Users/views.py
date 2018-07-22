@@ -481,7 +481,7 @@ class History(View):
         success:
             status_code: 200
             json={
-                "download-images":{
+                "download_images":{
                     "id": int,
                     "image": str, (url)
                     "desc": str,
@@ -494,10 +494,10 @@ class History(View):
                     "width": int,
                     "download_nums": int
                 },
-                "upload-images":{
+                "upload_images":{
                     "id": int,
                     "image": str, (url)
-                    "is-active": str,
+                    "is_active": str,
                     "desc": str,
                     "cates": str,
                     "user": str, (上传者用户名)
