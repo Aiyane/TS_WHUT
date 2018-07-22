@@ -847,6 +847,11 @@ failure:
     json={
         "error": "用户未登录"
     }
+failure:
+    status_code: 404
+    json={
+        "error": "图片未审查"
+    }
 ```
 ### 通过图片id获取低质量图片
 ```
@@ -875,6 +880,11 @@ failure:
     status_code: 400
     json={
         "error": "参数错误"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "图片未审查"
     }
 ```
 ## 其他
