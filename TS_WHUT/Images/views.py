@@ -782,7 +782,7 @@ class GetImage(View):
         image = ImageModel.objects.get(id=iamge_id)       
         data = {
             "id": image.id,
-            "image": image.image['avatar'].url,
+            "image": image.image['replace'].url,
             "desc": image.desc,
             "user": image.user.username,
             "pattern": image.pattern,
