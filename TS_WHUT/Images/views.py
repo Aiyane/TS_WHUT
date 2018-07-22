@@ -203,6 +203,7 @@ class ImageCateView(View):
                     "cates": str,
                     "collection": int,
                     "height": int,
+                    "user_image": str,
                     "width": int,
                     "download_nums": int,
                     "name": str,
@@ -229,6 +230,7 @@ class ImageCateView(View):
             datas = []
             for group in groups:
                 image = group.image
+                user_url = image.user.image.url
                 if image.if_active:
                     data = {
                         "id": image.id,
@@ -238,6 +240,7 @@ class ImageCateView(View):
                         "pattern": image.pattern,
                         "like": image.like_nums,
                         "collection": image.collection_nums,
+                        "user_image": user_url,
                         "cates": image.cates,
                         "height": image.image.height,
                         "width": image.image.width,
@@ -273,6 +276,7 @@ class ImagePattern(View):
                     "pattern": str,
                     "like": int,
                     "collection": int,
+                    "user_image": str
                     "cates": str,
                     "height": int,
                     "width": int,
@@ -300,6 +304,7 @@ class ImagePattern(View):
                                                if_active=True)[::-1][start:start+num]
             datas = []
             for image in images:
+                user_url = image.user.image.url
                 data = {
                     "id": image.id,
                     "image": image.image['avatar'].url,  # 缩略图
@@ -309,6 +314,7 @@ class ImagePattern(View):
                     "pattern": image.pattern,
                     "like": image.like_nums,
                     "collection": image.collection_nums,
+                    "user_image": user_url,
                     "height": image.image.height,
                     "width": image.image.width,
                     "download_nums": image.download_nums,
@@ -343,6 +349,7 @@ class ImageUser(View):
                     "user": str,
                     "pattern": str,
                     "like": int,
+                    "user_image": str,
                     "collection": int,
                     "cates": str,
                     "height": int,
@@ -372,6 +379,7 @@ class ImageUser(View):
                                                if_active=True).order_by[::-1][start:start+num]
             datas = []
             for image in images:
+                user_url = image.user.image.url
                 data = {
                     "id": image.id,
                     "image": image.image['avatar'].url,  # 缩略图
@@ -384,6 +392,7 @@ class ImageUser(View):
                     "height": image.image.height,
                     "width": image.image.width,
                     "download_nums": image.download_nums,
+                    "user_image": user_url,
                     "name": image.name,
                 }
                 datas.append(data)
@@ -416,6 +425,7 @@ class ImageLike(View):
                     "pattern": str,
                     "like": int,
                     "collection": int,
+                    "user_image": str,
                     "height": int,
                     "width": int,
                     "download_nums": int,
@@ -443,6 +453,7 @@ class ImageLike(View):
         datas = []
         for like in likes:
             image = like.image
+            user_url = image.user.image.url
             data = {
                 "id": image.id,
                 "image": image.image['avatar'].url,
@@ -454,6 +465,7 @@ class ImageLike(View):
                 "collection": image.collection_nums,
                 "height": image.image.height,
                 "width": image.image.width,
+                "user_image": user_url,
                 "download_nums": image.download_nums,
                 "name": image.name,
             }
@@ -563,6 +575,7 @@ class ImageCollect(View):
                     "collection": int,
                     "height": int,
                     "width": int,
+                    "user_image": str,
                     "download_nums": int,
                     "name": str,
                 }
@@ -589,6 +602,7 @@ class ImageCollect(View):
         datas = []
         for collect in collects:
             image = collect.image
+            user_url = image.user.image.url
             data = {
                 "id": image.id,
                 "image": image.image['avatar'].url,
@@ -600,6 +614,7 @@ class ImageCollect(View):
                 "collection": image.collection_nums,
                 "height": image.image.height,
                 "width": image.image.width,
+                "user_image": user_url,
                 "download_nums": image.download_nums,
                 "name": image.name,
             }
@@ -809,6 +824,7 @@ class GetImage(View):
                 "collection": int,
                 "height": int,
                 "width": int,
+                "user_image": str,
                 "download_nums": int,
                 "name": str,
             }
@@ -833,6 +849,7 @@ class GetImage(View):
             response = AltHttpResponse(json.dumps({"error": "图片未审查"}))
             response.status_code = 404
             return response
+        user_url = image.user.image.url
         data = {
             "id": image.id,
             "image": image.image['replace'].url,
@@ -841,6 +858,7 @@ class GetImage(View):
             "pattern": image.pattern,
             "cates": image.cates,
             "like": image.like_nums,
+            "user_image": user_url,
             "collection": image.collection_nums,
             "height": image.image.height,
             "width": image.image.width,

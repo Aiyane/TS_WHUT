@@ -381,6 +381,7 @@ class UserDownload(View):
                 "collection": int,
                 "height": int,
                 "width": int,
+                "user_image": str,
                 "download_nums": int,
                 "name": str,
             }
@@ -397,6 +398,7 @@ class UserDownload(View):
         download_images = []
         upload_images = []
         for ship in ships:
+            user_url = ship.image.user.image.url
             data = {
                 "id": ship.image.id,
                 "image": ship.image.image.url,
@@ -408,6 +410,7 @@ class UserDownload(View):
                 "collection": ship.image.collection_nums,
                 "height": ship.image.image.height,
                 "width": ship.image.image.width,
+                "user_image": user_url,
                 "download_nums": ship.image.download_nums,
                 "name": ship.image.name,
             }
@@ -438,6 +441,7 @@ class UserUpload(View):
                 "collection": int,
                 "height": int,
                 "width": int,
+                "user_image": str,
                 "download_nums": int,
                 "name": str,
             }
@@ -453,6 +457,7 @@ class UserUpload(View):
             user=user).order_by("-add_time")[:num]
         upload_images = []
         for image in images:
+            user_url = image.user.image.url
             data = {
                 "id": image.id,
                 "image": image.image.url,
@@ -464,6 +469,7 @@ class UserUpload(View):
                 "like": image.like_nums,
                 "collection": image.collection_nums,
                 "height": image.image.height,
+                "user_image": user_url,
                 "width": image.image.width,
                 "download_nums": image.download_nums,
                 "name": image.name,
@@ -492,6 +498,7 @@ class History(View):
                     "user": str,
                     "pattern": str,
                     "like": int,
+                    "user_image": str,
                     "cates": str,
                     "collection": int,
                     "height": int,
@@ -505,6 +512,7 @@ class History(View):
                     "is_active": str,
                     "desc": str,
                     "cates": str,
+                    "user_image": str,
                     "user": str, (上传者用户名)
                     "pattern": str, (格式)
                     "like": int,
@@ -530,6 +538,7 @@ class History(View):
         download_images = []
         upload_images = []
         for ship in ships:
+            user_url = ship.image.user.image.url
             data = {
                 "id": ship.image.id,
                 "image": ship.image.image.url,
@@ -538,6 +547,7 @@ class History(View):
                 "pattern": ship.image.pattern,
                 "cates": ship.image.cates,
                 "like": ship.image.like_nums,
+                "user_image": user_url,
                 "collection": ship.image.collection_nums,
                 "height": ship.image.image.height,
                 "width": ship.image.image.width,
@@ -546,6 +556,7 @@ class History(View):
             }
             download_images.append(data)
         for image in images:
+            user_url2 = image.user.image.url
             data = {
                 "id": image.id,
                 "image": image.image.url,
@@ -555,6 +566,7 @@ class History(View):
                 "pattern": image.pattern,
                 "cates": image.cates,
                 "like": image.like_nums,
+                "user_image": user_url2
                 "collection": image.collection_nums,
                 "height": image.image.height,
                 "width": image.image.width,

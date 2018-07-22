@@ -245,6 +245,7 @@ success:
             "like": int,
             "collection": int,
             "cates": str,
+            "user_image": str,
             "height": int,
             "width": int,
             "download_nums": int,
@@ -260,6 +261,7 @@ success:
             "user": str, (上传者用户名)
             "pattern": str, (格式)
             "like": int,
+            "user_image": str,
             "cates": str,
             "collection": int,
             "height": int,
@@ -290,6 +292,7 @@ success:
         "image": str,
         "desc": str,
         "user": str,
+        "user_image": str,
         "pattern": str,
         "cates": str,
         "like": int,
@@ -322,6 +325,7 @@ success:
         "user": str,
         "pattern": str,
         "cates": str,
+        "user_image": str,
         "like": int,
         "collection": int,
         "height": int,
@@ -586,6 +590,7 @@ success:
             "like": int,
             "collection": int,
             "height": int,
+            "user_image": str,
             "width": int,
             "download_nums": int,
             "name": str,
@@ -617,6 +622,7 @@ success:
             "cates": str,
             "pattern": str,
             "like": int,
+            "user_image": str,
             "collection": int,
             "height": int,
             "width": int,
@@ -652,6 +658,7 @@ success:
             "pattern": str,
             "like": int,
             "collection": int,
+            "user_image": str,
             "height": int,
             "width": int,
             "download_nums": int,
@@ -841,6 +848,7 @@ success:
         "desc": str,
         "user": str,
         "pattern": str,
+        "user_image": str,
         "like": int,
         "user_image": str, (用户头像)
         "cates": str,
@@ -887,6 +895,7 @@ success:
         "collection": int,
         "height": int,
         "width": int,
+        "user_image": str,
         "download_nums": int,
         "name": str,
     }
@@ -928,25 +937,28 @@ url:
 method:
     GET 
 params:
-    ：keywords(formData 关键字)
+    :keywords (关键字)
 success:
     status_code: 200
-    json={
-        "id": int,
-        "image": str,
-        "desc": str,
-        "cates": str,
-        "user": str,
-        "user_image": str, 
-        "pattern": str,
-        "like": int,
-        "collection": int,
-        "height": int,
-        "width": int,
-        "download_nums": int,
-    }
+    json=[
+        {
+            "id": int,
+            "image": str,
+            "desc": str,
+            "user": str,
+            "pattern": str,
+            "cates": str,
+            "like": int,
+            "collection": int,
+            "height": int,
+            "width": int,
+            "user_image": str,
+            "download_nums": int,
+            "name": str,
+        }
+    ]
 failure:
-    status_code: 400
+    status_code: 404
     json={
         "error": "未找到相关图片"
     }
