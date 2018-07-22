@@ -434,7 +434,7 @@ class ImageLike(View):
             image = like.image
             data = {
                 "id": image.id,
-                "image": image.image.url,
+                "image": image.image['avatar'].url,
                 "desc": image.desc,
                 "user": image.user.username,
                 "pattern": image.pattern,
@@ -569,7 +569,7 @@ class ImageCollect(View):
             image = collect.image
             data = {
                 "id": image.id,
-                "image": image.image.url,
+                "image": image.image['avatar'].url,
                 "desc": image.desc,
                 "user": image.user.username,
                 "pattern": image.pattern,
@@ -720,7 +720,11 @@ class Download(View):
                 "error": "用户未登录"
             }
         """
-        image_id = request.GET.get("id")
+        image_id = int(request.GET.get("id"))
+        if not iamge_id:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
         image = ImageModel.objects.get(id=image_id)
         data = {
             "id": image.id,
@@ -737,4 +741,56 @@ class Download(View):
             "download_nums": image.download_nums,
         }
         image.download_nums += 1
+        return AltHttpResponse(json.dumps(data))
+
+
+class GetImage(View):
+    def get(self, request):
+        """
+        url:
+            /image/id
+        method:
+            GET 
+        params:
+            *:id
+        success:
+            status_code: 200
+            json={
+                "id": int,
+                "image": str,
+                "desc": str,
+                "user": str,
+                "pattern": str,
+                "cates": str,
+                "like": int,
+                "collection": int,
+                "height": int,
+                "width": int,
+                "download_nums": int,
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        """
+        iamge_id = int(request.GET.get('id'))
+        if not iamge_id:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+        image = ImageModel.objects.get(id=iamge_id)       
+        data = {
+            "id": image.id,
+            "image": image.image['avatar'].url,
+            "desc": image.desc,
+            "user": image.user.username,
+            "pattern": image.pattern,
+            "cates": image.cates,
+            "like": image.like_nums,
+            "collection": image.collection_nums,
+            "height": image.image.height,
+            "width": image.image.width,
+            "download_nums": image.download_nums,
+        }
         return AltHttpResponse(json.dumps(data))

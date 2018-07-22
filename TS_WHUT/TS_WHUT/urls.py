@@ -20,7 +20,7 @@ import xadmin
 from operation.views import ActiveUserView, CatesView
 from Users.views import (RegisterView, LoginView, GetUserMsgView, UserDownload, UserUpload,
                          LogoutView, History, FollowView, IsLogin, Following, FollowNum, FanNum)
-from Images.views import (ImageView, ImageCateView, Download,
+from Images.views import (ImageView, ImageCateView, Download, GetImage,
                           ImagePattern, ImageUser, ImageLike, ImageCollect, Banner)
 
 urlpatterns = [
@@ -47,6 +47,7 @@ urlpatterns = [
     path('image/collect/', ImageCollect.as_view(), name="collect"),
     path('image/banner/', Banner.as_view(), name="Banner"),
     path('image/download', Download.as_view(), name="download"),
+    path('image/id', GetImage.as_view(), name="get_image"),
 
     path('active/<str:active_code>/', ActiveUserView.as_view(), name="user_active"),
     path('cates/', CatesView.as_view(), name="cates"),

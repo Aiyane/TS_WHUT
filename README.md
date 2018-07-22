@@ -40,6 +40,7 @@
     - [取消收藏](#取消收藏)
     - [获取轮播图](#获取轮播图)
     - [下载原图](#下载原图)
+    - [通过图片id获取图片](#通过图片id获取图片)
 - [其他](#其他)
     - [获取一定数量的类别名](#获取一定数量的类别名)
 
@@ -833,6 +834,35 @@ failure:
     status_code: 404
     json={
         "error": "用户未登录"
+    }
+```
+### 通过图片id获取图片
+```
+url:
+    /image/id
+method:
+    GET 
+params:
+    *:id
+success:
+    status_code: 200
+    json= {
+        "id": int,
+        "image": str,
+        "desc": str,
+        "user": str,
+        "pattern": str,
+        "cates": str,
+        "like": int,
+        "collection": int,
+        "height": int,
+        "width": int,
+        "download_nums": int,
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
     }
 ```
 ## 其他
