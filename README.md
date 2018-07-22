@@ -27,7 +27,6 @@
     - [判断是否登录](#判断是否登录)
     - [获取用户关注了多少人的数量](#获取用户关注了多少人的数量)
     - [获取粉丝数](#获取粉丝数)
-    - [检索](#检索)
 - [图片操作](#图片操作)
     - [上传图片](#上传图片)
     - [删除图片](#删除图片)
@@ -46,6 +45,7 @@
     - [通过图片id获取低质量图片](#通过图片id获取低质量图片)
 - [其他](#其他)
     - [获取一定数量的类别名](#获取一定数量的类别名)
+    - [检索](#检索)
 
 ## 用户操作
 ### 登录状态获得用户信息
@@ -476,36 +476,6 @@ failure:
     status_code: 404
     json={
         "error": "用户未登录"
-    }
-```
-### 检索
-```
-url:
-    /search/
-method:
-    GET 
-params:
-    ：keywords(formData 关键字)
-success:
-    status_code: 200
-    json={
-        "id": int,
-        "image": str,
-        "desc": str,
-        "cates": str,
-        "user": str,
-        "user_image": str, 
-        "pattern": str,
-        "like": int,
-        "collection": int,
-        "height": int,
-        "width": int,
-        "download_nums": int,
-    }
-failure:
-    status_code: 400
-    json={
-        "error": "未找到相关图片"
     }
 ```
 ## 图片操作
@@ -949,5 +919,35 @@ failure:
     status_code: 400
     json={
         "error": "参数错误"
+    }
+```
+### 检索
+```
+url:
+    /search/
+method:
+    GET 
+params:
+    ：keywords(formData 关键字)
+success:
+    status_code: 200
+    json={
+        "id": int,
+        "image": str,
+        "desc": str,
+        "cates": str,
+        "user": str,
+        "user_image": str, 
+        "pattern": str,
+        "like": int,
+        "collection": int,
+        "height": int,
+        "width": int,
+        "download_nums": int,
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "未找到相关图片"
     }
 ```
