@@ -96,6 +96,7 @@ class ImageModel(models.Model):
     cates = models.CharField(max_length=200, verbose_name="种类字符串", default="")
     collection_nums = models.IntegerField(default=0, verbose_name="收藏数")
     download_nums = models.IntegerField(default=0, verbose_name="下载量")
+    name = models.CharField(max_length=20, verbose_name="名字", default="")
 
     class Meta:
         verbose_name = "图片"

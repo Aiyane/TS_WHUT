@@ -22,6 +22,7 @@ class ImageView(View):
             :image (FILES)
             :desc (formData 描述)
             :cates (formData 分类字符串)
+            :name (formData 名字)
         success:
             status_code: 200
             json={
@@ -47,7 +48,8 @@ class ImageView(View):
         desc = request.POST.get("desc")
         user = request.user
         cate_str = request.POST.get("cates")
-        image = ImageModel(image=image, desc=desc, user=user, cates=cate_str)
+        name = request.POST.get('name')
+        image = ImageModel(image=image, desc=desc, user=user, cates=cate_str, name=name)
         image.save()
         user = request.user
         user.upload_nums += 1
@@ -131,7 +133,8 @@ class ImageView(View):
                     "collection": int,
                     "height": int,
                     "width": int,
-                    "download_nums": int
+                    "download_nums": int,
+                    "name": str,
                 }
             ]
         failure:
@@ -168,7 +171,8 @@ class ImageView(View):
                         "collection": image.collection_nums,
                         "height": image.image.height,
                         "width": image.image.width,
-                        "download_nums": image.download_nums
+                        "download_nums": image.download_nums,
+                        "name": image.name,
                     }
                     datas.append(data)
             except:
@@ -200,7 +204,8 @@ class ImageCateView(View):
                     "collection": int,
                     "height": int,
                     "width": int,
-                    "download_nums": int
+                    "download_nums": int,
+                    "name": str,
                 }
             ]
         failure:
@@ -236,7 +241,8 @@ class ImageCateView(View):
                         "cates": image.cates,
                         "height": image.image.height,
                         "width": image.image.width,
-                        "download_nums": image.download_nums
+                        "download_nums": image.download_nums,
+                        "name": image.name,
                     }
                     datas.append(data)
             return AltHttpResponse(json.dumps(datas))
@@ -270,7 +276,8 @@ class ImagePattern(View):
                     "cates": str,
                     "height": int,
                     "width": int,
-                    "download_nums": int
+                    "download_nums": int,
+                    "name": str,
                 }
             ]
         failure:
@@ -304,7 +311,8 @@ class ImagePattern(View):
                     "collection": image.collection_nums,
                     "height": image.image.height,
                     "width": image.image.width,
-                    "download_nums": image.download_nums
+                    "download_nums": image.download_nums,
+                    "name": image.name,
                 }
                 datas.append(data)
             return AltHttpResponse(json.dumps(datas))
@@ -339,7 +347,8 @@ class ImageUser(View):
                     "cates": str,
                     "height": int,
                     "width": int,
-                    "download_nums": int
+                    "download_nums": int,
+                    "name": str,
                 }
             ]
         failure:
@@ -374,7 +383,8 @@ class ImageUser(View):
                     "collection": image.collection_nums,
                     "height": image.image.height,
                     "width": image.image.width,
-                    "download_nums": image.download_nums
+                    "download_nums": image.download_nums,
+                    "name": image.name,
                 }
                 datas.append(data)
             return AltHttpResponse(json.dumps(datas))
@@ -408,7 +418,8 @@ class ImageLike(View):
                     "collection": int,
                     "height": int,
                     "width": int,
-                    "download_nums": int
+                    "download_nums": int,
+                    "name": str,
                 }
             ]
         failure:
@@ -443,7 +454,8 @@ class ImageLike(View):
                 "collection": image.collection_nums,
                 "height": image.image.height,
                 "width": image.image.width,
-                "download_nums": image.download_nums
+                "download_nums": image.download_nums,
+                "name": image.name,
             }
             datas.append(data)
         return AltHttpResponse(json.dumps(datas))
@@ -552,6 +564,7 @@ class ImageCollect(View):
                     "height": int,
                     "width": int,
                     "download_nums": int,
+                    "name": str,
                 }
             ]
         failure:
@@ -588,6 +601,7 @@ class ImageCollect(View):
                 "height": image.image.height,
                 "width": image.image.width,
                 "download_nums": image.download_nums,
+                "name": image.name,
             }
             datas.append(data)
         return AltHttpResponse(json.dumps(datas))
@@ -725,7 +739,8 @@ class Download(View):
                 "collection": int,
                 "height": int,
                 "width": int,
-                "download": int (下载量)
+                "download": int (下载量),
+                "name": str,
             }
         failure:
             status_code: 404
@@ -766,6 +781,7 @@ class Download(View):
             "height": image.image.height,
             "width": image.image.width,
             "download_nums": image.download_nums,
+            "name": image.name,
         }
         image.download_nums += 1
         return AltHttpResponse(json.dumps(data))
@@ -794,6 +810,7 @@ class GetImage(View):
                 "height": int,
                 "width": int,
                 "download_nums": int,
+                "name": str,
             }
         failure:
             status_code: 400
@@ -828,5 +845,6 @@ class GetImage(View):
             "height": image.image.height,
             "width": image.image.width,
             "download_nums": image.download_nums,
+            "name": image.name,
         }
         return AltHttpResponse(json.dumps(data))

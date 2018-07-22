@@ -246,7 +246,8 @@ success:
             "cates": str,
             "height": int,
             "width": int,
-            "download_nums": int
+            "download_nums": int,
+            "name": str,
             }
         ],
         "upload_images":[
@@ -262,7 +263,8 @@ success:
             "collection": int,
             "height": int,
             "width": int,
-            "download_nums": int
+            "download_nums": int,
+            "name": str,
             }
         ]
     }
@@ -294,6 +296,7 @@ success:
         "height": int,
         "width": int,
         "download_nums": int,
+        "name": str,
     }
 failure:
     status_code: 404
@@ -323,6 +326,7 @@ success:
         "height": int,
         "width": int,
         "download_nums": int,
+        "name": str,
     }
 failure:
     status_code: 404
@@ -484,6 +488,7 @@ params:
     :image (FILES)
     :desc (formData 描述)
     :cates (formData 分类字符串)
+    :name (formData)
 success:
     status_code: 200
     json={
@@ -548,7 +553,8 @@ success:
             "collection": int,
             "height": int,
             "width": int,
-            "download_nums": int
+            "download_nums": int,
+            "name": str,
         }
     ]
 failure:
@@ -580,7 +586,8 @@ success:
             "collection": int,
             "height": int,
             "width": int,
-            "download_nums": int
+            "download_nums": int,
+            "name": str,
         }
     ]
 failure:
@@ -612,7 +619,8 @@ success:
             "collection": int,
             "height": int,
             "width": int,
-            "download_nums": int
+            "download_nums": int,
+            "name": str,
         }
     ]
 failure:
@@ -645,7 +653,8 @@ success:
             "collection": int,
             "height": int,
             "width": int,
-            "download_nums": int
+            "download_nums": int,
+            "name": str,
         }
     ]
 failure:
@@ -677,6 +686,7 @@ success:
             "height": int,
             "width": int,
             "download_nums": int
+            "name": str,
         }
     ]
 failure:
@@ -747,6 +757,7 @@ success:
             "height": int,
             "width": int,
             "download_nums": int,
+            "name": str,
         }
     ]
 failure:
@@ -835,7 +846,8 @@ success:
         "collection": int,
         "height": int,
         "width": int,
-        "download": int (下载量)
+        "download": int (下载量),
+        "name": str,
     }
 failure:
     status_code: 404
@@ -875,6 +887,7 @@ success:
         "height": int,
         "width": int,
         "download_nums": int,
+        "name": str,
     }
 failure:
     status_code: 400

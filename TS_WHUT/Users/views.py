@@ -382,6 +382,7 @@ class UserDownload(View):
                 "height": int,
                 "width": int,
                 "download_nums": int,
+                "name": str,
             }
         failure:
             status_code: 404
@@ -408,6 +409,7 @@ class UserDownload(View):
                 "height": ship.image.image.height,
                 "width": ship.image.image.width,
                 "download_nums": ship.image.download_nums,
+                "name": ship.image.name,
             }
             download_images.append(data)
         return AltHttpResponse(json.dumps(download_images))
@@ -437,6 +439,7 @@ class UserUpload(View):
                 "height": int,
                 "width": int,
                 "download_nums": int,
+                "name": str,
             }
         failure:
             status_code: 404
@@ -462,7 +465,8 @@ class UserUpload(View):
                 "collection": image.collection_nums,
                 "height": image.image.height,
                 "width": image.image.width,
-                "download_nums": ship.image.download_nums,
+                "download_nums": image.download_nums,
+                "name": image.name,
             }
             upload_images.append(data)
         return AltHttpResponse(json.dumps(upload_images))
@@ -492,7 +496,8 @@ class History(View):
                     "collection": int,
                     "height": int,
                     "width": int,
-                    "download_nums": int
+                    "download_nums": int,
+                    "name": str,
                 },
                 "upload_images":{
                     "id": int,
@@ -506,7 +511,8 @@ class History(View):
                     "collection": int,
                     "height": int,
                     "width": int,
-                    "download_nums": int
+                    "download_nums": int,
+                    "name": str,
                 }
             }
         failure:
@@ -536,6 +542,7 @@ class History(View):
                 "height": ship.image.image.height,
                 "width": ship.image.image.width,
                 "download_nums": ship.image.download_nums,
+                "name": ship.image.name,
             }
             download_images.append(data)
         for image in images:
@@ -551,7 +558,8 @@ class History(View):
                 "collection": image.collection_nums,
                 "height": image.image.height,
                 "width": image.image.width,
-                "download_nums": ship.image.download_nums,
+                "download_nums": image.download_nums,
+                "name": image.name,
             }
             upload_images.append(data)
         return AltHttpResponse(json.dumps({"download_images": download_images, "upload_images": upload_images}))
