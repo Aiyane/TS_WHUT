@@ -18,7 +18,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 import xadmin
 from operation.views import ActiveUserView, CatesView
-from Users.views import (RegisterView, LoginView, GetUserMsgView, UserDownload, UserUpload
+from Users.views import (RegisterView, LoginView, GetUserMsgView, UserDownload, UserUpload,
                          LogoutView, History, FollowView, IsLogin, Following, FollowNum, FanNum)
 from Images.views import (ImageView, ImageCateView, Download,
                           ImagePattern, ImageUser, ImageLike, ImageCollect, Banner)
