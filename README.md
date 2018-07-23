@@ -47,6 +47,8 @@
     - [获得收藏夹全部缩略图片](#获得收藏夹全部缩略图片)
     - [向收藏夹增加一张图片](#向收藏夹增加一张图片)
     - [向收藏夹中删除一张图片](#向收藏夹中删除一张图片)
+    - [获取图片的全部评论](#获取图片的全部评论)
+    - [登录状态下新增一条评论](#登录状态下新增一条评论)
 - [其他](#其他)
     - [获取一定数量的类别名](#获取一定数量的类别名)
     - [检索](#检索)
@@ -585,6 +587,7 @@ success:
             "like": int,
             "collection": int,
             "height": int,
+            "user_id": int,
             "width": int,
             "download_nums": int,
             "name": str,
@@ -605,6 +608,7 @@ method:
 params:
     *:num (url)
     *:page (分页)
+    *:name
 success:
     status_code: 200
     json=[
@@ -616,6 +620,7 @@ success:
             "cates": str,
             "pattern": str,
             "like": int,
+            "user_id": int,
             "collection": int,
             "height": int,
             "user_image": str,
@@ -647,6 +652,7 @@ success:
             "image": str,
             "desc": str,
             "user": str,
+            "user_id": int,
             "cates": str,
             "pattern": str,
             "like": int,
@@ -1043,6 +1049,99 @@ failure:
     status_code: 404
     json={
         "error": "不能修改其他用户收藏"
+    }
+```
+### 获取图片的全部评论
+```
+url:
+    /image/comment/
+method:
+    GET
+params:
+    *:id (图片id)
+success:
+    status_code: 200
+    json=[
+        {
+            "id": int, (评论id)
+            "content": str, (内容)
+            "user": str, (用户名)
+            "user_id": int, (用户id)
+            "user_image": str, (用户头像)
+            "add_time": str, (时间)
+            "reply_user": str, (回复用户的用户名)
+            "reply_user_id": int, (回复用户的id)
+        }
+    ]
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "图片未激活"
+    }
+```
+### 登录状态下新增一条评论
+```
+url:
+    /image/comment/
+method:
+    POST
+params:
+    *:id (图片id)
+    *:content (评论内容)
+    :user-id (回复用户id)
+success:
+    status_code: 200
+    json={
+        "status": "true"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "图片未激活"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+```
+### 删除一条评论
+```
+url:
+    /image/comment/
+method:
+    DELETE
+params:
+    *:id (评论id)
+success:
+    status_code: 200
+    json={
+        "status": "true"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "不能删除其他用户评论"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
     }
 ```
 ## 其他

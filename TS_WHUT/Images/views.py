@@ -4,7 +4,8 @@ from django.http import QueryDict
 import imghdr
 import json
 
-from Users.models import ImageModel, GroupImage, UserProfile, LikeShip, Collection, BannerModel, FolderImage, Folder
+from Users.models import (ImageModel, GroupImage, UserProfile, LikeShip, Collection,
+                          BannerModel, FolderImage, Folder, Comment)
 
 from utils.is_login import is_login
 from utils.AltResponse import AltHttpResponse
@@ -130,6 +131,7 @@ class ImageView(View):
                     "pattern": str,
                     "like": int,
                     "user_image": str, (用户头像)
+                    "user_id": int,
                     "cates": str,
                     "collection": int,
                     "height": int,
@@ -166,6 +168,7 @@ class ImageView(View):
                         "desc": image.desc,
                         "user": image.user.username,
                         "user_image": user_url,
+                        "user_id": image.user.id,
                         "pattern": image.pattern,
                         "like": image.like_nums,
                         "cates": image.cates,
@@ -191,6 +194,7 @@ class ImageCateView(View):
         params:
             *:num (url)
             *:page (分页)
+            *:name (种类名)
         success:
             status_code: 200
             json=[
@@ -202,6 +206,7 @@ class ImageCateView(View):
                     "pattern": str,
                     "like": int,
                     "cates": str,
+                    "user_id": int,
                     "collection": int,
                     "height": int,
                     "user_image": str,
@@ -242,6 +247,7 @@ class ImageCateView(View):
                         "like": image.like_nums,
                         "collection": image.collection_nums,
                         "user_image": user_url,
+                        "user_id": image.user.id,
                         "cates": image.cates,
                         "height": image.image.height,
                         "width": image.image.width,
@@ -279,6 +285,7 @@ class ImagePattern(View):
                     "collection": int,
                     "user_image": str
                     "cates": str,
+                    "user_id": int,
                     "height": int,
                     "width": int,
                     "download_nums": int,
@@ -314,6 +321,7 @@ class ImagePattern(View):
                     "user": image.user.username,
                     "pattern": image.pattern,
                     "like": image.like_nums,
+                    "user_id": image.user.id,
                     "collection": image.collection_nums,
                     "user_image": user_url,
                     "height": image.image.height,
@@ -869,6 +877,7 @@ class GetImage(View):
         }
         return AltHttpResponse(json.dumps(data))
 
+
 class ImageFolder(View):
     @is_login
     def get(self, request):
@@ -1046,4 +1055,159 @@ class ImageFolder(View):
             ship[0].delete()
             folder.nums -= 1
             folder.save()
+            return AltHttpResponse(json.dumps({"status": "true"}))
+
+
+class ImageComment(View):
+    def get(self, request):
+        """获取图片的全部评论
+        url:
+            /image/comment/
+        method:
+            GET
+        params:
+            *:id (图片id)
+        success:
+            status_code: 200
+            json=[
+                {
+                    "id": int, (评论id)
+                    "content": str, (内容)
+                    "user": str, (用户名)
+                    "user_id": int, (用户id)
+                    "user_image": str, (用户头像)
+                    "add_time": str, (时间)
+                    "reply_user": str, (回复用户的用户名)
+                    "reply_user_id": int, (回复用户的id)
+                }
+            ]
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "图片未激活"
+            }
+        """
+        image_id = request.GET.get('id')
+        if not image_id:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+        image = ImageModel(id=int(image_id))
+        if not image.if_active:
+            response = AltHttpResponse(json.dumps({"error": "图片未激活"}))
+            response.status_code = 404
+            return response
+        comments = Comment.objects.filter(image=image)[::-1]
+        data = []
+        for comment in comments:
+            data.append({
+                "id": comment.id,
+                "content": comment.content,
+                "user": comment.user.username,
+                "user": comment.user.id,
+                "user_image": comment.user.image.url,
+                "add_time": comment.add_time,
+                "reply_user": comment.reply.username,
+                "reply_user_id": comment.reply.id,
+            })
+        return AltHttpResponse(json.dumps(data))
+
+    @is_login
+    def post(self, request):
+        """新增评论
+        url:
+            /image/comment/
+        method:
+            POST
+        params:
+            *:id (图片id)
+            *:content (评论内容)
+            :user-id (回复用户id)
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "图片未激活"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        image_id = request.POST.get("id")
+        content = request.POST.get("content")
+        user_id = request.POST.get("user-id")
+        if not image_id or not content:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+        image = ImageModel(id=int(image_id))
+        if not image.if_active:
+            response = AltHttpResponse(json.dumps({"error": "图片未激活"}))
+            response.status_code = 404
+            return response
+        comment = Comment(user=request.user, image=image, content=content)
+        if user_id:
+            comment.reply = UserProfile.objects.get(id=int(user_id))
+        comment.save()
+        return AltHttpResponse(json.dumps({"status": "true"}))
+
+    @is_login
+    def delete(self, request):
+        """删除一条评论
+        url:
+            /image/comment/
+        method:
+            DELETE
+        params:
+            *:id (评论id)
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "不能删除其他用户评论"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        put_get = QueryDict(request.body).get
+        comment_id = put_get('id')
+        if not comment_id:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+        comment = Comment.objects.get(id=int(comment_id))
+        if comment.user.id != request.user.id:
+            response = AltHttpResponse(json.dumps({"error": "不能修改其他用户评论"}))
+            response.status_code = 404
+            return response
+        else:
+            comment.delete()
             return AltHttpResponse(json.dumps({"status": "true"}))
