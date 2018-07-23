@@ -155,3 +155,43 @@ class DownloadShip(models.Model):
     class Meta:
         verbose_name = "下载"
         verbose_name_plural = verbose_name
+
+
+class Folder(models.Model):
+    name = models.CharField(max_length=20, verbose_name="收藏文件夹",
+                            default="默认文件夹")
+    user = models.ForeignKey(UserProfile, on_delete=models.SET_NULL,
+                             null=True, verbose_name="用户")
+    add_time = models.DateField(default=datetime.now, verbose_name="添加时间")
+    nums = models.IntegerField(default=0, verbose_name="数量")
+
+    class Meta:
+        verbose_name = '收藏夹'
+        verbose_name_plural = verbose_name
+
+
+class FolderImage(models.Model):
+    folder = models.ForeignKey(Folder, on_delete=models.SET_NULL,
+                               null=True, verbose_name="文件夹")
+    image = models.ForeignKey(ImageModel, on_delete=models.SET_NULL,
+                              null=True, verbose_name="图片")
+    add_time = models.DateField(default=datetime.now, verbose_name="添加时间")
+
+    class Meta:
+        verbose_name = "图片文件夹关系"
+        verbose_name_plural = verbose_name
+
+
+class Comment(models.Model):
+    image = models.ForeignKey(ImageModel, on_delete=models.SET_NULL,
+                              null=True, verbose_name="图片")
+    add_time = models.DateField(default=datetime.now, verbose_name="添加时间")
+    user = models.ForeignKey(UserProfile, on_delete=models.SET_NULL,
+                             null=True, verbose_name="用户", related_name="speaker")
+    reply = models.ForeignKey(UserProfile, on_delete=models.SET_NULL,
+                              null=True, verbose_name="回复人", related_name="listen")
+    content = models.CharField(max_length=200, verbose_name="评论")
+
+    class Meta:
+        verbose_name = "评论"
+        verbose_name_plural = verbose_name

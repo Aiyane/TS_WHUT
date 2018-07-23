@@ -17,10 +17,10 @@ from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
 import xadmin
-from operation.views import ActiveUserView, CatesView
+from operation.views import ActiveUserView, CatesView, FolderView
 from Users.views import (RegisterView, LoginView, GetUserMsgView, UserDownload, UserUpload,
-                         LogoutView, History, FollowView, IsLogin, Following, FollowNum, FanNum)
-from Images.views import (ImageView, ImageCateView, Download, GetImage,
+                         LogoutView, History, FollowView, IsLogin, Following, FollowNum, FanNum, UserFolder)
+from Images.views import (ImageView, ImageCateView, Download, GetImage, ImageFolder
                           ImagePattern, ImageUser, ImageLike, ImageCollect, Banner)
 
 urlpatterns = [
@@ -38,6 +38,7 @@ urlpatterns = [
     path('user/islogin/', IsLogin.as_view(), name="is_login"),
     path('user/download', UserDownload.as_view(), name="user_download"),
     path('user/upload', UserUpload.as_view(), name="user_upload"),
+    path('user/folder/', UserFolder.as_view(), name="user_folder")
 
     path('image/', ImageView.as_view(), name="image"),
     path('image/cate/', ImageCateView.as_view(), name="image_cate"),
@@ -46,11 +47,13 @@ urlpatterns = [
     path('image/like/', ImageLike.as_view(), name="like"),
     path('image/collect/', ImageCollect.as_view(), name="collect"),
     path('image/banner/', Banner.as_view(), name="Banner"),
-    path('image/download', Download.as_view(), name="download"),
-    path('image/id', GetImage.as_view(), name="get_image"),
+    path('image/download/', Download.as_view(), name="download"),
+    path('image/id/', GetImage.as_view(), name="get_image"),
+    path('image/folder/', ImageFolder.as_view(), name="image_folder"),
 
     path('active/<str:active_code>/', ActiveUserView.as_view(), name="user_active"),
     path('cates/', CatesView.as_view(), name="cates"),
+    path('folder/', FolderView.as_view(), name="folder"),
 ]
 
 if settings.DEBUG:

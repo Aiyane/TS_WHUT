@@ -4,7 +4,7 @@ from django.http import QueryDict
 import imghdr
 import json
 
-from Users.models import ImageModel, GroupImage, UserProfile, LikeShip, Collection, BannerModel
+from Users.models import ImageModel, GroupImage, UserProfile, LikeShip, Collection, BannerModel, FolderImage, Folder
 
 from utils.is_login import is_login
 from utils.AltResponse import AltHttpResponse
@@ -49,7 +49,8 @@ class ImageView(View):
         user = request.user
         cate_str = request.POST.get("cates")
         name = request.POST.get('name')
-        image = ImageModel(image=image, desc=desc, user=user, cates=cate_str, name=name)
+        image = ImageModel(image=image, desc=desc, user=user,
+                           cates=cate_str, name=name)
         image.save()
         user = request.user
         user.upload_nums += 1
@@ -703,7 +704,7 @@ class Banner(View):
     def get(self, request):
         """
         url:
-            /image/banner
+            /image/banner/
         method:
             GET
         success:
@@ -735,7 +736,7 @@ class Download(View):
     def get(self, request):
         """
         url:
-            /image/download
+            /image/download/
         method:
             GET
         params:
@@ -783,6 +784,7 @@ class Download(View):
             response = AltHttpResponse(json.dumps({"error": "图片未审查"}))
             response.status_code = 404
             return response
+        user_url = image.user.image.url
         data = {
             "id": image.id,
             "image": image.image.url,
@@ -806,7 +808,7 @@ class GetImage(View):
     def get(self, request):
         """
         url:
-            /image/id
+            /image/id/
         method:
             GET 
         params:
@@ -839,12 +841,12 @@ class GetImage(View):
                 "error": "图片未审查"
             }
         """
-        iamge_id = int(request.GET.get('id'))
-        if not iamge_id:
+        image_id = int(request.GET.get('id'))
+        if not image_id:
             response = AltHttpResponse(json.dumps({"error": "参数错误"}))
             response.status_code = 400
             return response
-        image = ImageModel.objects.get(id=iamge_id)       
+        image = ImageModel.objects.get(id=int(image_id))
         if not image.if_active:
             response = AltHttpResponse(json.dumps({"error": "图片未审查"}))
             response.status_code = 404
@@ -866,3 +868,182 @@ class GetImage(View):
             "name": image.name,
         }
         return AltHttpResponse(json.dumps(data))
+
+class ImageFolder(View):
+    @is_login
+    def get(self, request):
+        """获得该收藏夹全部图片
+        url:
+            /image/folder/
+        method:
+            GET 
+        params:
+            *:id (收藏夹id)
+        success:
+            status_code: 200
+            json=[
+                {
+                    "id": int,
+                    "image": str,
+                    "desc": str,
+                    "user": str,
+                    "pattern": str,
+                    "cates": str,
+                    "like": int,
+                    "collection": int,
+                    "height": int,
+                    "width": int,
+                    "user_image": str,
+                    "download_nums": int,
+                    "name": str,
+                }
+            ]
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "不能查看其他用户收藏"
+            }
+        """
+        folder_id = request.GET.get("id")
+        if not folder_id:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+        folder = Folder.objects.get(id=int(folder_id))
+        if request.user.id != folder.user.id:
+            response = AltHttpResponse(json.dumps({"error": "不能查看其他用户收藏"}))
+        ships = FolderImage.objects.filter(folder=folder)
+        datas = []
+        for ship in ships:
+            image = ship.image
+            user_url = image.user.image.url
+            datas.append({
+                "id": image.id,
+                "image": image.image['avatar'].url,
+                "desc": image.desc,
+                "user": image.user.username,
+                "pattern": image.pattern,
+                "cates": image.cates,
+                "like": image.like_nums,
+                "collection": image.collection_nums,
+                "height": image.image.height,
+                "width": image.image.width,
+                "user_image": user_url,
+                "download_nums": image.download_nums,
+                "name": image.name,
+            })
+        return AltHttpResponse(json.dumps(datas))
+
+    @is_login
+    def post(self, request):
+        """向收藏夹增加一张图片
+        url:
+            /image/folder/
+        method:
+            POST
+        params:
+            *:id (收藏夹id)
+            *:image-id (图片id)
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "不能修改其他用户收藏"
+            }
+        """
+        folder_id = request.POST.get('id')
+        image_id = request.POST.get('image-id')
+        if not folder_id or not image_id:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+        folder = Folder.objects.get(id=int(folder_id))
+        if folder.user.id != request.user.id:
+            response = AltHttpResponse(json.dumps({"error": "不能修改其他用户收藏"}))
+            response.status_code = 404
+            return response
+        image = ImageModel(id=int(image_id))
+        FolderImage(image=image, folder=folder).save()
+        folder.nums += 1
+        folder.save()
+        return AltHttpResponse(json.dumps({"status": "true"}))
+
+    @is_login
+    def delete(self, request):
+        """向收藏夹删除一张图片
+        url:
+            /image/folder/
+        method:
+            DELETE
+        params:
+            *:id (收藏夹id)
+            *:image-id (图片id)
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        success:
+            json={
+                "status": "图片已删除"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "不能修改其他用户收藏"
+            }
+        """
+        folder_id = request.POST.get('id')
+        image_id = request.POST.get('image-id')
+        if not folder_id or not image_id:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+        folder = Folder.objects.get(id=int(folder_id))
+        if folder.user.id != request.user.id:
+            response = AltHttpResponse(json.dumps({"error": "不能修改其他用户收藏"}))
+            response.status_code = 404
+            return response
+        image = ImageModel(id=int(image_id))
+        ship = FolderImage.objects.filter(folder=folder, image=image)
+        if not ship:
+            return AltHttpResponse(json.dumps({"status": "图片已删除"}))
+        else:
+            ship[0].delete()
+            folder.nums -= 1
+            folder.save()
+            return AltHttpResponse(json.dumps({"status": "true"}))

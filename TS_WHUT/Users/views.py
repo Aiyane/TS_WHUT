@@ -14,7 +14,7 @@ from django.contrib.auth import login, authenticate, logout
 from .forms import RegisterForm
 import json
 
-from .models import UserProfile, ImageModel, DownloadShip, Follow
+from .models import UserProfile, ImageModel, DownloadShip, Follow, Folder
 from operation.models import UserMessage
 
 from utils.send_email import send_register_email
@@ -566,7 +566,7 @@ class History(View):
                 "pattern": image.pattern,
                 "cates": image.cates,
                 "like": image.like_nums,
-                "user_image": user_url2
+                "user_image": user_url2,
                 "collection": image.collection_nums,
                 "height": image.image.height,
                 "width": image.image.width,
@@ -797,3 +797,38 @@ class FanNum(View):
         """
         user = request.user
         return AltHttpResponse(json.dumps({"num": user.fan_nums}))
+
+
+class UserFolder(View):
+    @is_login
+    def get(self, request):
+        """
+        url:
+            /user/folder/
+        method:
+            GET
+        success:
+            status_code: 200
+            json=[
+                {
+                    "id": int,
+                    "name": str,
+                    "nums": int,
+                }
+            ]
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        user = request.user
+        folders = Folder.objects.filter(user=user)
+        datas = []
+        for folder in folders:
+            datas.append({
+                "id": folder.id,
+                "name": folder.name,
+                "nums": folder.nums,
+            })
+        return AltHttpResponse(json.dumps(datas))

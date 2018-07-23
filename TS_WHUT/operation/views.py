@@ -1,10 +1,9 @@
-from django.shortcuts import render
 from django.views.generic.base import View
 # 对用户名密码校验，后一个发出一个session登录，登出
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse, HttpResponseRedirect
 from utils.send_email import send_register_email
-from Users.models import UserProfile, EmailVerifyRecord, GroupImage
+from Users.models import UserProfile, EmailVerifyRecord, GroupImage, Folder
+from django.http import QueryDict
 from django.contrib.auth.hashers import make_password
 from .models import UserMessage
 from .forms import LoginForm, RegisterForm, ModifyPwdForm, EmailForm
@@ -13,10 +12,9 @@ from utils.is_login import is_login
 import json
 
 
-        
 class ResetView(View):
-    def get(self, request):
-        return render(request, 'reset.html', {'error': ''})
+    # def get(self, request):
+        # return render(request, 'reset.html', {'error': ''})
 
     def post(self, request):
         email = request.POST.get("email", "")
@@ -34,13 +32,13 @@ class ResetView(View):
                 user.password = make_password(password1)
                 user.save()
                 send_register_email(email, "forget")  # 发送验证邮箱
-                return render(request, 'reset.html', {"error": "邮箱"})
+                # return render(request, 'reset.html', {"error": "邮箱"})
             else:
                 error = "密码输入不一致"
-                return render(request, "reset.html", {"error": error})
+                # return render(request, "reset.html", {"error": error})
         else:
             error = "没有该用户"
-            return render(request, "reset.html", {"error": error})
+            # return render(request, "reset.html", {"error": error})
 
 
 class ActiveUserView(View):
@@ -68,10 +66,10 @@ class ActiveUserView(View):
 
             # 返回主页, 验证成功
             login(request, user)
-            return render(request, 'index.html')
-        else:
+            # return render(request, 'index.html')
+        # else:
             # 返回激活页面失效了
-            return render(request, 'register.html', )
+            # return render(request, 'register.html', )
 
 
 class CheckView(View):
@@ -154,3 +152,130 @@ class CatesView(View):
         for group in groups:
             datas.append(group.name)
         return AltHttpResponse(json.dumps(datas))
+
+
+class FolderView(View):
+    @is_login
+    def post(self, request):
+        """创建一个收藏夹
+        url:
+            /image/folder
+        method:
+            POST
+        params:
+            *:name
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        name = request.POST.get("name")
+        if not name:
+            response = AltHttpResponse(json.dumps({"error", "参数错误"}))
+            response.status_code = 400
+            return response
+        user = request.user
+        Folder(user=user, name=name).save()
+        return AltHttpResponse(json.dumps({"status": "true"}))
+
+    @is_login
+    def put(self, request):
+        """修改一个文件夹
+        url:
+            /image/folder
+        method:
+            PUT
+        params:
+            *:name
+            *:id (收藏夹id)
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "不能修改其他用户"
+            }
+        """
+        put_get = QueryDict(request.body).get
+        name = put_get("name")
+        folder_id = put_get("id")
+        if not folder_id or not name:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+        folder = Folder.objects.get(id=int(folder_id))
+        if request.user.id != folder.user.id:
+            response = AltHttpResponse(json.dumps({"error": "不能修改其他用户"}))
+            response.status_code = 404
+            return response
+        folder.name = name
+        folder.save()
+        return AltHttpResponse(json.dumps({"status": "true"}))
+
+    @is_login
+    def delete(self, request):
+        """
+        url:
+            /image/folder
+        method:
+            DELETE
+        params:
+            *:id (收藏夹id)
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "不能修改其他用户"
+            }
+        """
+        put_get = QueryDict(request.body).get
+        folder_id = put_get("id")
+        if not folder_id:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+        folder = Folder.objects.get(id=int(folder_id))
+        if request.user.id != folder.user.id:
+            response = AltHttpResponse(json.dumps({"error": "不能修改其他用户"}))
+            response.status_code = 404
+            return response
+        folder.delete()
+        return AltHttpResponse(json.dumps({"status": "true"}))

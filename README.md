@@ -27,6 +27,7 @@
     - [判断是否登录](#判断是否登录)
     - [获取用户关注了多少人的数量](#获取用户关注了多少人的数量)
     - [获取粉丝数](#获取粉丝数)
+    - [获取用户全部收藏夹](#获取用户全部收藏夹)
 - [图片操作](#图片操作)
     - [上传图片](#上传图片)
     - [删除图片](#删除图片)
@@ -43,9 +44,15 @@
     - [获取轮播图](#获取轮播图)
     - [下载原图](#下载原图)
     - [通过图片id获取低质量图片](#通过图片id获取低质量图片)
+    - [获得收藏夹全部缩略图片](#获得收藏夹全部缩略图片)
+    - [向收藏夹增加一张图片](#向收藏夹增加一张图片)
+    - [向收藏夹中删除一张图片](#向收藏夹中删除一张图片)
 - [其他](#其他)
     - [获取一定数量的类别名](#获取一定数量的类别名)
     - [检索](#检索)
+    - [创建一个收藏夹](#创建一个收藏夹)
+    - [修改收藏夹名字](#修改收藏夹名字)
+    - [删除收藏夹](#删除收藏夹)
 
 ## 用户操作
 ### 登录状态获得用户信息
@@ -482,6 +489,27 @@ failure:
         "error": "用户未登录"
     }
 ```
+### 获取用户全部收藏夹
+```
+url:
+    /user/folder/
+method:
+    GET
+success:
+    status_code: 200
+    json=[
+        {
+            "id": int,
+            "name": str,
+            "nums": int,
+        }
+    ]
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+```
 ## 图片操作
 ### 上传图片
 ```
@@ -835,7 +863,7 @@ success:
 ### 下载原图
 ```
 url:
-    /image/download
+    /image/download/
 method:
     GET
 params:
@@ -877,7 +905,7 @@ failure:
 ### 通过图片id获取低质量图片
 ```
 url:
-    /image/id
+    /image/id/
 method:
     GET 
 params:
@@ -908,6 +936,113 @@ failure:
     status_code: 404
     json={
         "error": "图片未审查"
+    }
+```
+### 获得收藏夹全部缩略图片
+```
+url:
+    /image/folder/
+method:
+    GET 
+params:
+    *:id (收藏夹id)
+success:
+    status_code: 200
+    json=[
+        {
+            "id": int,
+            "image": str,
+            "desc": str,
+            "user": str,
+            "pattern": str,
+            "cates": str,
+            "like": int,
+            "collection": int,
+            "height": int,
+            "width": int,
+            "user_image": str,
+            "download_nums": int,
+            "name": str,
+        }
+    ]
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "不能查看其他用户收藏"
+    }
+```
+### 向收藏夹增加一张图片
+```
+url:
+    /image/folder/
+method:
+    POST
+params:
+    *:id (收藏夹id)
+    *:image-id (图片id)
+success:
+    status_code: 200
+    json={
+        "status": "true"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "不能修改其他用户收藏"
+    }
+```
+### 向收藏夹中删除一张图片
+```
+url:
+    /image/folder/
+method:
+    DELETE
+params:
+    *:id (收藏夹id)
+    *:image-id (图片id)
+success:
+    status_code: 200
+    json={
+        "status": "true"
+    }
+success:
+    json={
+        "status": "图片已删除"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "不能修改其他用户收藏"
     }
 ```
 ## 其他
@@ -961,5 +1096,88 @@ failure:
     status_code: 404
     json={
         "error": "未找到相关图片"
+    }
+```
+### 创建一个收藏夹
+```
+url:
+    /folder/
+method:
+    POST
+params:
+    *:name (收藏夹名字)
+success:
+    status_code: 200
+    json={
+        "status": "true"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+```
+### 修改收藏夹名字
+```
+url:
+    /folder/
+method:
+    PUT
+params:
+    *:name
+    *:id (收藏夹id)
+success:
+    status_code: 200
+    json={
+        "status": "true"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "不能修改其他用户"
+    }
+```
+### 删除收藏夹
+```
+url:
+    /folder/
+method:
+    DELETE
+params:
+    *:id (收藏夹id)
+success:
+    status_code: 200
+    json={
+        "status": "true"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "不能修改其他用户"
     }
 ```
