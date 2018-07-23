@@ -823,6 +823,7 @@ class UserFolder(View):
                     "id": int,
                     "name": str,
                     "nums": int,
+                    "add_time": str, (创建时间)
                 }
             ]
         failure:
@@ -839,6 +840,7 @@ class UserFolder(View):
                 "id": folder.id,
                 "name": folder.name,
                 "nums": folder.nums,
+                "add_time": folder.add_time,
             })
         return AltHttpResponse(json.dumps(datas))
 
