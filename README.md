@@ -28,6 +28,7 @@
     - [获取用户关注了多少人的数量](#获取用户关注了多少人的数量)
     - [获取粉丝数](#获取粉丝数)
     - [获取用户全部收藏夹](#获取用户全部收藏夹)
+    - [点赞一条评论](#点赞一条评论)
 - [图片操作](#图片操作)
     - [上传图片](#上传图片)
     - [删除图片](#删除图片)
@@ -394,6 +395,11 @@ failure:
     json={
         "error": "参数错误"
     }
+failure:
+    status_code: 400
+    json={
+        "error": "已关注"
+    }
 ```
 ### 取消关注
 ```
@@ -507,6 +513,59 @@ success:
             "nums": int,
         }
     ]
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+```
+### 点赞一条评论
+```
+url:
+    /user/comment/like/
+method:
+    POST
+params:
+    *:id (评论id)
+success:
+    status_code: 200
+    json={
+        "status": "true"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "已点赞"
+    }
+```
+### 取消点赞一条评论
+```
+url:
+    /user/comment/like/
+method:
+    DELETE
+params:
+    *:id (评论id)
+success:
+    status_code: 200
+    json={
+        "status": "true"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
 failure:
     status_code: 404
     json={
@@ -759,6 +818,11 @@ failure:
     json={
         "error": "图片未审查"
     }
+failure:
+    status_code: 400
+    json={
+        "error": "已点赞"
+    }
 ```
 ### 取消点赞
 ```
@@ -831,6 +895,11 @@ failure:
     status_code: 404
     json={
         "error": "图片未审查"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "已收藏"
     }
 ```
 ### 取消收藏
@@ -1017,6 +1086,11 @@ failure:
     json={
         "error": "不能修改其他用户收藏"
     }
+failure:
+    status_code: 400
+    json={
+        "error": "已收藏"
+    }
 ```
 ### 向收藏夹中删除一张图片
 ```
@@ -1067,6 +1141,7 @@ success:
             "id": int, (评论id)
             "content": str, (内容)
             "user": str, (用户名)
+            "like": int,
             "user_id": int, (用户id)
             "user_image": str, (用户头像)
             "add_time": str, (时间)
@@ -1221,6 +1296,11 @@ failure:
     json={
         "error": "用户未登录"
     }
+failure:
+    status_code: 400
+    json={
+        "error": "已有该收藏夹"
+    }
 ```
 ### 修改收藏夹名字
 ```
@@ -1250,6 +1330,11 @@ failure:
     status_code: 404
     json={
         "error": "不能修改其他用户"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "已有该收藏夹"
     }
 ```
 ### 删除收藏夹

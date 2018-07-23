@@ -191,7 +191,15 @@ class Comment(models.Model):
     reply = models.ForeignKey(UserProfile, on_delete=models.SET_NULL,
                               null=True, verbose_name="回复人", related_name="listen")
     content = models.CharField(max_length=200, verbose_name="评论")
+    like = models.IntegerField(default=0, verbose_name="点赞数")
 
     class Meta:
         verbose_name = "评论"
         verbose_name_plural = verbose_name
+
+class CommentLike(models.Model):
+    comment = models.ForeignKey(Comment, on_delete=models.SET_NULL, 
+                                null=True, verbose_name="评论")
+    user = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, 
+                             null=True, verbose_name="用户")
+    add_time = models.DateField(default=datetime.now, verbose_name="添加时间")

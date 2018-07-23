@@ -14,7 +14,7 @@ from django.contrib.auth import login, authenticate, logout
 from .forms import RegisterForm
 import json
 
-from .models import UserProfile, ImageModel, DownloadShip, Follow, Folder
+from .models import UserProfile, ImageModel, DownloadShip, Follow, Folder, Comment, CommentLike
 from operation.models import UserMessage
 
 from utils.send_email import send_register_email
@@ -639,12 +639,21 @@ class FollowView(View):
             json={
                 "error": "参数错误"
             }
+        failure:
+            status_code: 400
+            json={
+                "error": "已关注"
+            }
         """
         user = request.user
         user.follow_nums += 1
         user_id = int(request.POST.get("id"))
         if user_id:
-            follow = UserProfile.objects.get(id=user_id)
+            follow = UserProfil.objects.get(id=user_id)
+            if Follow.object.filter(fan=user, follow=follow):
+                response = AltHttpResponse(json.dumps({"error": "已关注"}))
+                response.status_code = 400
+                return response
             follow.fan_nums += 1
             Follow(fan=user, follow=follow).save()
             return AltHttpResponse(json.dumps({"status": "true"}))
@@ -832,3 +841,85 @@ class UserFolder(View):
                 "nums": folder.nums,
             })
         return AltHttpResponse(json.dumps(datas))
+
+class UserCommentLike(View):
+    @is_login
+    def post(self, request):
+        """
+        url:
+            /user/comment/like/
+        method:
+            POST
+        params:
+            *:id (评论id)
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        comment_id = request.POST.get('id')
+        if not comment_id:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+        comment = Comment.objects.get(id=int(comment_id))
+        if CommentLike.objects.filter(user=request.user, comment=comment):
+            response = AltHttpResponse(json.dumps({"error": "已点赞"}))
+            response.status_code = 400
+            return response
+        CommentLike(user=request.user, comment=comment).save()
+        comment.like += 1
+        comment.save()
+        return AltHttpResponse(json.dumps({"status": "true"}))
+
+    @is_login
+    def delets(self, request):
+        """
+        url:
+            /user/comment/like/
+        method:
+            DELETE
+        params:
+            *:id (评论id)
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        comment_id = request.POST.get('id')
+        if not comment_id:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+        comment = Comment.objects.get(id=int(comment_id))
+        CommentLike.objects.filter(user=request.user, comment=comment).delete()
+        comment.like -= 1
+        comment.save()
+        return AltHttpResponse(json.dumps({"status": "true"}))

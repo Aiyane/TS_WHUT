@@ -508,6 +508,11 @@ class ImageLike(View):
             json={
                 "error": "图片未审查"
             }
+        failure:
+            status_code: 400
+            json={
+                "error": "已点赞"
+            }
         """
         user = request.user
         image_id = request.POST.get("image-id")
@@ -516,6 +521,10 @@ class ImageLike(View):
             if not image.if_active:
                 response = AltHttpResponse(json.dumps({"error": "图片未审查"}))
                 response.status_code = 404
+                return response
+            if LikeShip.objects.filter(user=user, image=image):
+                response = AltHttpResponse(json.dumps({"error": "已点赞"}))
+                response.status_code = 400
                 return response
             image.like_nums += 1
             like = LikeShip(user=user, image=image)
@@ -659,6 +668,11 @@ class ImageCollect(View):
             json={
                 "error": "图片未审查"
             }
+        failure:
+            status_code: 400
+            json={
+                "error": "已收藏"
+            }
         """
         user = request.user
         image_id = request.POST.get("image-id")
@@ -667,6 +681,10 @@ class ImageCollect(View):
             if not image.if_active:
                 response = AltHttpResponse(json.dumps({"error": "图片未审查"}))
                 response.status_code = 404
+                return response
+            if Collection.objects.filter(user=user, image=image):
+                response = AltHttpResponse(json.dumps({"error": "已收藏"}))
+                response.status_code = 400
                 return response
             image.collection_nums += 1
             image.save()
@@ -983,6 +1001,11 @@ class ImageFolder(View):
             json={
                 "error": "不能修改其他用户收藏"
             }
+        failure:
+            status_code: 400
+            json={
+                "error": "已收藏"
+            }
         """
         folder_id = request.POST.get('id')
         image_id = request.POST.get('image-id')
@@ -996,6 +1019,10 @@ class ImageFolder(View):
             response.status_code = 404
             return response
         image = ImageModel(id=int(image_id))
+        if FolderImage.objects.filter(folder=folder, image=image):
+                response = AltHttpResponse(json.dumps({"error": "已收藏"}))
+                response.status_code = 400
+                return response
         FolderImage(image=image, folder=folder).save()
         folder.nums += 1
         folder.save()
@@ -1074,6 +1101,7 @@ class ImageComment(View):
                     "id": int, (评论id)
                     "content": str, (内容)
                     "user": str, (用户名)
+                    "like": int,
                     "user_id": int, (用户id)
                     "user_image": str, (用户头像)
                     "add_time": str, (时间)
@@ -1109,6 +1137,7 @@ class ImageComment(View):
                 "id": comment.id,
                 "content": comment.content,
                 "user": comment.user.username,
+                "like": comment.like,
                 "user": comment.user.id,
                 "user_image": comment.user.image.url,
                 "add_time": comment.add_time,

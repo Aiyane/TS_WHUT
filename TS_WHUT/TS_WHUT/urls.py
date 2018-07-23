@@ -18,7 +18,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 import xadmin
 from operation.views import ActiveUserView, CatesView, FolderView
-from Users.views import (RegisterView, LoginView, GetUserMsgView, UserDownload, UserUpload,
+from Users.views import (RegisterView, LoginView, GetUserMsgView, UserDownload, UserUpload, UserCommentLike,
                          LogoutView, History, FollowView, IsLogin, Following, FollowNum, FanNum, UserFolder)
 from Images.views import (ImageView, ImageCateView, Download, GetImage, ImageFolder,
                           ImagePattern, ImageUser, ImageLike, ImageCollect, Banner)
@@ -39,6 +39,8 @@ urlpatterns = [
     path('user/download', UserDownload.as_view(), name="user_download"),
     path('user/upload', UserUpload.as_view(), name="user_upload"),
     path('user/folder/', UserFolder.as_view(), name="user_folder"),
+    path('user/comment/like/', UserCommentLike.as_view(), name="comment_like"),
+
 
     path('image/', ImageView.as_view(), name="image"),
     path('image/cate/', ImageCateView.as_view(), name="image_cate"),

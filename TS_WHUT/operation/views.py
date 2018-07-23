@@ -159,7 +159,7 @@ class FolderView(View):
     def post(self, request):
         """创建一个收藏夹
         url:
-            /image/folder
+            /folder/
         method:
             POST
         params:
@@ -179,6 +179,11 @@ class FolderView(View):
             json={
                 "error": "用户未登录"
             }
+        failure:
+            status_code: 400
+            json={
+                "error": "已有该收藏夹"
+            }
         """
         name = request.POST.get("name")
         if not name:
@@ -186,6 +191,10 @@ class FolderView(View):
             response.status_code = 400
             return response
         user = request.user
+        if Folder.objects.filter(user=user, name=name):
+            response = AltHttpResponse(json.dumps({"error": "已有该收藏夹"}))
+            response.status_code = 400
+            return response
         Folder(user=user, name=name).save()
         return AltHttpResponse(json.dumps({"status": "true"}))
 
@@ -193,7 +202,7 @@ class FolderView(View):
     def put(self, request):
         """修改一个文件夹
         url:
-            /image/folder
+            folder
         method:
             PUT
         params:
@@ -219,6 +228,11 @@ class FolderView(View):
             json={
                 "error": "不能修改其他用户"
             }
+        failure:
+            status_code: 400
+            json={
+                "error": "已有该收藏夹"
+            }
         """
         put_get = QueryDict(request.body).get
         name = put_get("name")
@@ -232,6 +246,10 @@ class FolderView(View):
             response = AltHttpResponse(json.dumps({"error": "不能修改其他用户"}))
             response.status_code = 404
             return response
+        if Folder.objects.filter(user=user, name=name):
+            response = AltHttpResponse(json.dumps({"error": "已有该收藏夹"}))
+            response.status_code = 400
+            return response
         folder.name = name
         folder.save()
         return AltHttpResponse(json.dumps({"status": "true"}))
@@ -240,7 +258,7 @@ class FolderView(View):
     def delete(self, request):
         """
         url:
-            /image/folder
+            folder
         method:
             DELETE
         params:
