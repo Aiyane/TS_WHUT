@@ -17,7 +17,7 @@ from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
 import xadmin
-from operation.views import ActiveUserView, CatesView, FolderView
+from operation.views import ActiveUserView, CatesView
 from Users.views import (RegisterView, LoginView, GetUserMsgView, UserDownload, UserUpload, UserCommentLike,
                          LogoutView, History, FollowView, IsLogin, Following, FollowNum, FanNum, UserFolder)
 from Images.views import (ImageView, ImageCateView, Download, GetImage, ImageFolder,
@@ -55,7 +55,6 @@ urlpatterns = [
 
     path('active/<str:active_code>/', ActiveUserView.as_view(), name="user_active"),
     path('cates/', CatesView.as_view(), name="cates"),
-    path('folder/', FolderView.as_view(), name="folder"),
 ]
 
 if settings.DEBUG:

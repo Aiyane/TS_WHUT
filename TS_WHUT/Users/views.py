@@ -844,6 +844,150 @@ class UserFolder(View):
             })
         return AltHttpResponse(json.dumps(datas))
 
+    @is_login
+    def post(self, request):
+        """创建一个收藏夹
+        url:
+            /user/folder/
+        method:
+            POST
+        params:
+            *:name
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "已有该收藏夹"
+            }
+        """
+        name = request.POST.get("name")
+        if not name:
+            response = AltHttpResponse(json.dumps({"error", "参数错误"}))
+            response.status_code = 400
+            return response
+        user = request.user
+        if Folder.objects.filter(user=user, name=name):
+            response = AltHttpResponse(json.dumps({"error": "已有该收藏夹"}))
+            response.status_code = 400
+            return response
+        Folder(user=user, name=name).save()
+        return AltHttpResponse(json.dumps({"status": "true"}))
+
+    @is_login
+    def put(self, request):
+        """修改一个文件夹
+        url:
+            /user/folder/
+        method:
+            PUT
+        params:
+            *:name
+            *:id (收藏夹id)
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "不能修改其他用户"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "已有该收藏夹"
+            }
+        """
+        put_get = QueryDict(request.body).get
+        name = put_get("name")
+        folder_id = put_get("id")
+        if not folder_id or not name:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+        folder = Folder.objects.get(id=int(folder_id))
+        if request.user.id != folder.user.id:
+            response = AltHttpResponse(json.dumps({"error": "不能修改其他用户"}))
+            response.status_code = 404
+            return response
+        if Folder.objects.filter(user=user, name=name):
+            response = AltHttpResponse(json.dumps({"error": "已有该收藏夹"}))
+            response.status_code = 400
+            return response
+        folder.name = name
+        folder.save()
+        return AltHttpResponse(json.dumps({"status": "true"}))
+
+    @is_login
+    def delete(self, request):
+        """
+        url:
+            /user/folder/
+        method:
+            DELETE
+        params:
+            *:id (收藏夹id)
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "不能修改其他用户"
+            }
+        """
+        put_get = QueryDict(request.body).get
+        folder_id = put_get("id")
+        if not folder_id:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+        folder = Folder.objects.get(id=int(folder_id))
+        if request.user.id != folder.user.id:
+            response = AltHttpResponse(json.dumps({"error": "不能修改其他用户"}))
+            response.status_code = 404
+            return response
+        folder.delete()
+        return AltHttpResponse(json.dumps({"status": "true"}))
+
+
 class UserCommentLike(View):
     @is_login
     def post(self, request):

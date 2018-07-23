@@ -30,6 +30,9 @@
     - [获取用户全部收藏夹](#获取用户全部收藏夹)
     - [点赞一条评论](#点赞一条评论)
     - [取消点赞一条评论](#取消点赞一条评论)
+    - [创建一个收藏夹](#创建一个收藏夹)
+    - [修改收藏夹名字](#修改收藏夹名字)
+    - [删除收藏夹](#删除收藏夹)
 - [图片操作](#图片操作)
     - [上传图片](#上传图片)
     - [删除图片](#删除图片)
@@ -55,9 +58,6 @@
 - [其他](#其他)
     - [获取一定数量的类别名](#获取一定数量的类别名)
     - [检索](#检索)
-    - [创建一个收藏夹](#创建一个收藏夹)
-    - [修改收藏夹名字](#修改收藏夹名字)
-    - [删除收藏夹](#删除收藏夹)
 
 ## 用户操作
 ### 登录状态获得用户信息
@@ -519,6 +519,99 @@ failure:
     status_code: 404
     json={
         "error": "用户未登录"
+    }
+```
+### 创建一个收藏夹
+```
+url:
+    /user/folder/
+method:
+    POST
+params:
+    *:name (收藏夹名字)
+success:
+    status_code: 200
+    json={
+        "status": "true"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "已有该收藏夹"
+    }
+```
+### 修改收藏夹名字
+```
+url:
+    /user/folder/
+method:
+    PUT
+params:
+    *:name
+    *:id (收藏夹id)
+success:
+    status_code: 200
+    json={
+        "status": "true"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "不能修改其他用户"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "已有该收藏夹"
+    }
+```
+### 删除收藏夹
+```
+url:
+    /user/folder/
+method:
+    DELETE
+params:
+    *:id (收藏夹id)
+success:
+    status_code: 200
+    json={
+        "status": "true"
+    }
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "不能修改其他用户"
     }
 ```
 ### 点赞一条评论
@@ -1273,98 +1366,5 @@ failure:
     status_code: 404
     json={
         "error": "未找到相关图片"
-    }
-```
-### 创建一个收藏夹
-```
-url:
-    /folder/
-method:
-    POST
-params:
-    *:name (收藏夹名字)
-success:
-    status_code: 200
-    json={
-        "status": "true"
-    }
-failure:
-    status_code: 400
-    json={
-        "error": "参数错误"
-    }
-failure:
-    status_code: 404
-    json={
-        "error": "用户未登录"
-    }
-failure:
-    status_code: 400
-    json={
-        "error": "已有该收藏夹"
-    }
-```
-### 修改收藏夹名字
-```
-url:
-    /folder/
-method:
-    PUT
-params:
-    *:name
-    *:id (收藏夹id)
-success:
-    status_code: 200
-    json={
-        "status": "true"
-    }
-failure:
-    status_code: 400
-    json={
-        "error": "参数错误"
-    }
-failure:
-    status_code: 404
-    json={
-        "error": "用户未登录"
-    }
-failure:
-    status_code: 404
-    json={
-        "error": "不能修改其他用户"
-    }
-failure:
-    status_code: 400
-    json={
-        "error": "已有该收藏夹"
-    }
-```
-### 删除收藏夹
-```
-url:
-    /folder/
-method:
-    DELETE
-params:
-    *:id (收藏夹id)
-success:
-    status_code: 200
-    json={
-        "status": "true"
-    }
-failure:
-    status_code: 400
-    json={
-        "error": "参数错误"
-    }
-failure:
-    status_code: 404
-    json={
-        "error": "用户未登录"
-    }
-failure:
-    status_code: 404
-    json={
-        "error": "不能修改其他用户"
     }
 ```
