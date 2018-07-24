@@ -653,7 +653,7 @@ class FollowView(View):
         user.follow_nums += 1
         user_id = int(request.POST.get("id"))
         if user_id:
-            follow = UserProfil.objects.get(id=user_id)
+            follow = UserProfile.objects.get(id=user_id)
             if Follow.object.filter(fan=user, follow=follow):
                 response = AltHttpResponse(json.dumps({"error": "已关注"}))
                 response.status_code = 400
@@ -939,7 +939,7 @@ class UserFolder(View):
             response = AltHttpResponse(json.dumps({"error": "不能修改其他用户"}))
             response.status_code = 404
             return response
-        if Folder.objects.filter(user=user, name=name):
+        if Folder.objects.filter(user=request.user, name=name):
             response = AltHttpResponse(json.dumps({"error": "已有该收藏夹"}))
             response.status_code = 400
             return response
