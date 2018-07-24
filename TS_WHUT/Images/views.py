@@ -14,7 +14,7 @@ from utils.AltResponse import AltHttpResponse
 class ImageView(View):
     @is_login
     def post(self, request):
-        """
+        """上传图片
         url:
             /image
         method:
@@ -69,7 +69,7 @@ class ImageView(View):
 
     @is_login
     def delete(self, request):
-        """
+        """删除图片
         url:
             /image
         method:
@@ -112,7 +112,7 @@ class ImageView(View):
             return response
 
     def get(self, request):
-        """
+        """获得一定数量的缩略图片_按时间倒序
         url:
             /image
         method:
@@ -186,7 +186,7 @@ class ImageView(View):
 
 class ImageCateView(View):
     def get(self, request):
-        """
+        """获取一定数量的缩略图片_按图片种类_时间倒序
         url:
             /image/cate
         method:
@@ -264,7 +264,7 @@ class ImageCateView(View):
 
 class ImagePattern(View):
     def get(self, request):
-        """
+        """获取一定数量的缩略图片_按图片格式_时间倒序
         url:
             /image/pattern
         method:
@@ -339,7 +339,7 @@ class ImagePattern(View):
 
 class ImageUser(View):
     def get(self, request):
-        """
+        """获取一定数量的缩略图片_按上传者_时间倒序
         url:
             /image/user
         method:
@@ -415,7 +415,7 @@ class ImageUser(View):
 class ImageLike(View):
     @is_login
     def get(self, request):
-        """
+        """登录状态下获取一定数量的已点赞的缩略图片
         url:
             /image/like
         method:
@@ -483,7 +483,7 @@ class ImageLike(View):
 
     @is_login
     def post(self, request):
-        """
+        """点赞某图片
         url:
             /image/like
         method:
@@ -538,7 +538,7 @@ class ImageLike(View):
 
     @is_login
     def delete(self, request):
-        """
+        """取消点赞
         url:
             /image/like
         method:
@@ -572,7 +572,7 @@ class ImageLike(View):
 class ImageCollect(View):
     @is_login
     def get(self, request):
-        """
+        """登录状态下获取一定数量的已收藏的缩略图片
         url:
             /image/collect
         method:
@@ -641,7 +641,7 @@ class ImageCollect(View):
 
     @is_login
     def post(self, request):
-        """
+        """收藏某图片
         url:
             /image/collect
         method:
@@ -698,7 +698,7 @@ class ImageCollect(View):
 
     @is_login
     def delete(self, request):
-        """
+        """取消收藏
         url:
             /image/collect
         method:
@@ -728,7 +728,7 @@ class ImageCollect(View):
 
 class Banner(View):
     def get(self, request):
-        """
+        """获取轮播图
         url:
             /image/banner/
         method:
@@ -760,7 +760,7 @@ class Banner(View):
 class Download(View):
     @is_login
     def get(self, request):
-        """
+        """下载原图
         url:
             /image/download/
         method:
@@ -832,7 +832,7 @@ class Download(View):
 
 class GetImage(View):
     def get(self, request):
-        """
+        """通过图片id获取低质量图片
         url:
             /image/id/
         method:

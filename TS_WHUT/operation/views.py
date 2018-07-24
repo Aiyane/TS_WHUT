@@ -124,7 +124,7 @@ class ModifyPwdView(View):
 
 class CatesView(View):
     def get(self, request):
-        """
+        """获取一定数量的类别名
         url:
             /cates
         method:
@@ -156,7 +156,7 @@ class CatesView(View):
 class GetMsg(View):
     @is_login
     def get(self, request):
-        """
+        """获取用户全部消息
         url:
             /message/
         method:

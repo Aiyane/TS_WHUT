@@ -25,7 +25,7 @@ from utils.is_login import is_login
 class RegisterView(View):
     @is_login
     def get(self, request):
-        """
+        """登录状态获得用户信息
         url:
             /user
         method:
@@ -66,7 +66,7 @@ class RegisterView(View):
         return AltHttpResponse(json.dumps(data))
 
     def post(self, request):
-        """
+        """注册新用户
         url:
             /user
         method:
@@ -137,7 +137,7 @@ class RegisterView(View):
 
     @is_login
     def delete(self, request):
-        """
+        """删除用户
         url:
             /user
         method:
@@ -158,7 +158,7 @@ class RegisterView(View):
 
     @is_login
     def put(self, request):
-        """
+        """修改用户信息
         url:
             /user
         method:
@@ -251,7 +251,7 @@ class RegisterView(View):
 
 class LoginView(View):
     def post(self, request):
-        """
+        """登录
         url:
             /user/login
         method:
@@ -294,7 +294,7 @@ class LoginView(View):
 
 class GetUserMsgView(View):
     def get(self, request, username):
-        """
+        """非登录状态获取用户信息
         url:
             /user/msg/<username>
         method:
@@ -341,7 +341,7 @@ class GetUserMsgView(View):
 class LogoutView(View):
     @is_login
     def post(self, request):
-        """
+        """登出
         url:
             /user/logout
         method:
@@ -365,7 +365,7 @@ class LogoutView(View):
 class UserDownload(View):
     @is_login
     def get(self, request):
-        """
+        """获取用户一定数量下载的图片
         url:
             /user/download
         method:
@@ -425,7 +425,7 @@ class UserDownload(View):
 class UserUpload(View):
     @is_login
     def get(self, request):
-        """
+        """获取用户一定数量的上传图片
         url:
             /user/upload
         method:
@@ -485,7 +485,7 @@ class UserUpload(View):
 class History(View):
     @is_login
     def post(self, request):
-        """ 按照时间倒序
+        """ 获取用户上传_下载记录_按照时间倒序
         url:
             /user/history
         method:
@@ -668,7 +668,7 @@ class FollowView(View):
 
     @is_login
     def delete(self, request):
-        """
+        """取消关注
         url:
             /user/follow
         method:
@@ -708,7 +708,7 @@ class FollowView(View):
 class Following(View):
     @is_login
     def get(self, request):
-        """
+        """已关注哪些人
         url:
             /user/following
         method:
@@ -747,7 +747,7 @@ class Following(View):
 class IsLogin(View):
     @is_login
     def get(self, request):
-        """
+        """判断是否登录
         url:
             /user/is_login/
         method:
@@ -769,7 +769,7 @@ class IsLogin(View):
 class FollowNum(View):
     @is_login
     def get(self, request):
-        """
+        """获取用户关注了多少人的数量
         url:
             /user/follow/nums/
         method:
@@ -792,7 +792,7 @@ class FollowNum(View):
 class FanNum(View):
     @is_login
     def get(self, request):
-        """
+        """获取粉丝数
         url:
             /user/fan/nums/
         method:
@@ -815,7 +815,7 @@ class FanNum(View):
 class UserFolder(View):
     @is_login
     def get(self, request):
-        """
+        """获取用户全部收藏夹
         url:
             /user/folder/
         method:
@@ -893,7 +893,7 @@ class UserFolder(View):
 
     @is_login
     def put(self, request):
-        """修改一个文件夹
+        """修改收藏夹名字
         url:
             /user/folder/
         method:
@@ -949,7 +949,7 @@ class UserFolder(View):
 
     @is_login
     def delete(self, request):
-        """
+        """删除收藏夹
         url:
             /user/folder/
         method:
@@ -995,7 +995,7 @@ class UserFolder(View):
 class UserCommentLike(View):
     @is_login
     def post(self, request):
-        """
+        """点赞一条评论
         url:
             /user/comment/like/
         method:
@@ -1040,7 +1040,7 @@ class UserCommentLike(View):
 
     @is_login
     def delets(self, request):
-        """
+        """取消点赞一条评论
         url:
             /user/comment/like/
         method:
