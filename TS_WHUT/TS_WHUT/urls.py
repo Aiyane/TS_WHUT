@@ -17,11 +17,11 @@ from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
 import xadmin
-from operation.views import ActiveUserView, CatesView
+from operation.views import ActiveUserView, CatesView, GetMsg
 from Users.views import (RegisterView, LoginView, GetUserMsgView, UserDownload, UserUpload, UserCommentLike,
                          LogoutView, History, FollowView, IsLogin, Following, FollowNum, FanNum, UserFolder)
 from Images.views import (ImageView, ImageCateView, Download, GetImage, ImageFolder,
-                          ImagePattern, ImageUser, ImageLike, ImageCollect, Banner)
+                          ImagePattern, ImageUser, ImageLike, ImageCollect, Banner, ImageComment)
 
 urlpatterns = [
     path('admin/', xadmin.site.urls),
@@ -52,9 +52,11 @@ urlpatterns = [
     path('image/download/', Download.as_view(), name="download"),
     path('image/id/', GetImage.as_view(), name="get_image"),
     path('image/folder/', ImageFolder.as_view(), name="image_folder"),
+    path('image/comment/', ImageComment.as_view(), name="image_comment"),
 
     path('active/<str:active_code>/', ActiveUserView.as_view(), name="user_active"),
     path('cates/', CatesView.as_view(), name="cates"),
+    path('message/', GetMsg.as_view(), name="get_message"),
 ]
 
 if settings.DEBUG:

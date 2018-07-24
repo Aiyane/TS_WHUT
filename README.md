@@ -58,6 +58,7 @@
 - [其他](#其他)
     - [获取一定数量的类别名](#获取一定数量的类别名)
     - [检索](#检索)
+    - [获取用户全部消息](#获取用户全部消息)
 
 ## 用户操作
 ### 登录状态获得用户信息
@@ -75,6 +76,7 @@ success:
         "gender": str, (male或female)
         "image": str, (url)
         "birthday": data,
+        "if_sign": bool, (是否签约)
         "upload_nums": int, (上传数)
         "fan_nums": int, (粉丝数)
         "follow_nums": int (关注者数)
@@ -208,6 +210,7 @@ success:
         "id": int,
         "username": str,
         "email": str,
+        "if_sign": bool, (是否签约)
         "gender": str, (male或female)
         "image": str, (url)
         "fan_nums": int,
@@ -1366,5 +1369,27 @@ failure:
     status_code: 404
     json={
         "error": "未找到相关图片"
+    }
+```
+### 获取用户全部消息
+```
+url:
+    /message/
+method:
+    GET
+success:
+    status_code: 200
+    json=[
+        {
+            "post_user": str, (发送用户用户名)
+            "message": str, (消息内容)
+            "has_read": bool, (是否已读)
+            "add_time": str, (发送时间)
+        }
+    ]
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
     }
 ```

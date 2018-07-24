@@ -39,6 +39,7 @@ class RegisterView(View):
                 "gender": str, (male或female)
                 "image": str, (url)
                 "birthday": data,
+                "if_sign": bool, (是否签约)
                 "upload_nums": int, (上传数)
                 "fan_nums": int, (粉丝数)
                 "follow_nums": int (关注者数)
@@ -55,6 +56,7 @@ class RegisterView(View):
             "username": user.username,
             "email": user.email,
             "gender": user.gender,
+            "if_sign": user.if_sign,
             "image": user.image.url,
             "birthday": user.birthday,
             "upload_nums": user.upload_nums,
@@ -308,6 +310,7 @@ class GetUserMsgView(View):
                 "gender": str, (male或female)
                 "image": str, (url)
                 "fan_nums": int,
+                "if_sign": bool, (是否签约)
                 "follow_nums": int,
             }
         failure:
@@ -324,6 +327,7 @@ class GetUserMsgView(View):
                 "email": user.email,
                 "image": user.image.url,
                 "gender": user.gender,
+                "if_sign": user.if_sign,
                 "fan_nums": user.fan_nums,
                 "follow_nums": user.follow_nums,
             }

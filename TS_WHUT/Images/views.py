@@ -6,7 +6,7 @@ import json
 
 from Users.models import (ImageModel, GroupImage, UserProfile, LikeShip, Collection,
                           BannerModel, FolderImage, Folder, Comment)
-
+from operation.models import UserMessage
 from utils.is_login import is_login
 from utils.AltResponse import AltHttpResponse
 
@@ -1192,7 +1192,10 @@ class ImageComment(View):
             return response
         comment = Comment(user=request.user, image=image, content=content)
         if user_id:
-            comment.reply = UserProfile.objects.get(id=int(user_id))
+            reply_user = UserProfile.objects.get(id=int(user_id))
+            comment.reply = reply_user
+            # 保存新的用户信息
+            UserMessage(post_user=request.user.username, user=reply_user, message=content).save()
         comment.save()
         return AltHttpResponse(json.dumps({"status": "true"}))
 

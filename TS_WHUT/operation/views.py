@@ -152,3 +152,39 @@ class CatesView(View):
         for group in groups:
             datas.append(group.name)
         return AltHttpResponse(json.dumps(datas))
+
+class GetMsg(View):
+    @is_login
+    def get(self, request):
+        """
+        url:
+            /message/
+        method:
+            GET
+        success:
+            status_code: 200
+            json=[
+                {
+                    "post_user": str, (发送用户用户名)
+                    "message": str, (消息内容)
+                    "has_read": bool, (是否已读)
+                    "add_time": str, (发送时间)
+                }
+            ]
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        user = request.user
+        msgs = UserMessage.objects.filter(user=user)[::-1]
+        data = []
+        for msg in msgs:
+            data.append({
+                "post_user": msg.post_user,
+                "message": msg.message,
+                "has_read": msg.has_read,
+                "add_time": msg.add_time,
+            })
+        return AltHttpResponse(json.dumps(data))
