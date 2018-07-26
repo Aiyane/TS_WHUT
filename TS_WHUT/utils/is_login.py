@@ -14,6 +14,7 @@ def is_login(func):  # 我在这里写了一个装饰器，可以在方法中对
         if request.user.is_authenticated:
             return func(self, request, *args, **kwargs)
         else:
+            print("未登录")
             response = AltHttpResponse(json.dumps({"error": "用户未登录"}))
             response.status_code =404
             return response

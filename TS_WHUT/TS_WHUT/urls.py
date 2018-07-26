@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.urls import path
 from django.conf.urls.static import static
+from django.conf.urls import include
 from django.conf import settings
 import xadmin
 from operation.views import ActiveUserView, CatesView, GetMsg
@@ -35,9 +36,9 @@ urlpatterns = [
     path('user/follow/nums/', FollowNum.as_view(), name="follow_nums"),
     path('user/fan/nums/', FanNum.as_view(), name="fan_nums"),
     path('user/following/', Following.as_view(), name="following"),
-    path('user/islogin/', IsLogin.as_view(), name="is_login"),
-    path('user/download', UserDownload.as_view(), name="user_download"),
-    path('user/upload', UserUpload.as_view(), name="user_upload"),
+    path('user/is_login/', IsLogin.as_view(), name="is_login"),
+    path('user/download/', UserDownload.as_view(), name="user_download"),
+    path('user/upload/', UserUpload.as_view(), name="user_upload"),
     path('user/folder/', UserFolder.as_view(), name="user_folder"),
     path('user/comment/like/', UserCommentLike.as_view(), name="comment_like"),
 
@@ -57,6 +58,7 @@ urlpatterns = [
     path('active/<str:active_code>/', ActiveUserView.as_view(), name="user_active"),
     path('cates/', CatesView.as_view(), name="cates"),
     path('message/', GetMsg.as_view(), name="get_message"),
+    path('search/', include('haystack.urls'), name='search'),
 ]
 
 if settings.DEBUG:

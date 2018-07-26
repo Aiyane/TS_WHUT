@@ -1,0 +1,5 @@
+{{ object.desc }}
+{{ object.user }}
+{{ object.pattern }}
+{{ object.cates }}
+{{ object.name }}

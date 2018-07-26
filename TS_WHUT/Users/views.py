@@ -396,7 +396,7 @@ class UserDownload(View):
             }
         """
         user = request.user
-        num = int(request.POST.get("num"))
+        num = int(request.GET.get("num"))
         ships = DownloadShip.objects.filter(
             user=user).order_by("-add_time")[:num]
         download_images = []
@@ -456,7 +456,7 @@ class UserUpload(View):
             }
         """
         user = request.user
-        num = int(request.POST.get("num"))
+        num = int(request.GET.get("num"))
         images = ImageModel.objects.filter(
             user=user).order_by("-add_time")[:num]
         upload_images = []

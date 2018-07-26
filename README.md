@@ -901,6 +901,8 @@ url:
     /image/like/
 method:
     POST
+params:
+    *:image-id
 success:
     status_code: 200
     json={
@@ -978,7 +980,7 @@ url:
 method:
     POST
 params:
-    *:num (url)
+    *:image-id
 success:
     status_code: 200
     json={
@@ -1345,7 +1347,8 @@ url:
 method:
     GET 
 params:
-    :keywords (关键字)
+    :q (关键字)
+    :page (页号)
 success:
     status_code: 200
     json=[

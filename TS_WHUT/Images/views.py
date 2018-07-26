@@ -236,8 +236,8 @@ class ImageCateView(View):
             datas = []
             for group in groups:
                 image = group.image
-                user_url = image.user.image.url
-                if image.if_active:
+                if image and image.if_active:
+                    user_url = image.user.image.url
                     data = {
                         "id": image.id,
                         "image": image.image['avatar'].url,  # 缩略图
@@ -312,24 +312,25 @@ class ImagePattern(View):
                                                if_active=True)[::-1][start:start+num]
             datas = []
             for image in images:
-                user_url = image.user.image.url
-                data = {
-                    "id": image.id,
-                    "image": image.image['avatar'].url,  # 缩略图
-                    "desc": image.desc,
-                    "cates": image.cates,
-                    "user": image.user.username,
-                    "pattern": image.pattern,
-                    "like": image.like_nums,
-                    "user_id": image.user.id,
-                    "collection": image.collection_nums,
-                    "user_image": user_url,
-                    "height": image.image.height,
-                    "width": image.image.width,
-                    "download_nums": image.download_nums,
-                    "name": image.name,
-                }
-                datas.append(data)
+                if image and image.if_active:
+                    user_url = image.user.image.url
+                    data = {
+                        "id": image.id,
+                        "image": image.image['avatar'].url,  # 缩略图
+                        "desc": image.desc,
+                        "cates": image.cates,
+                        "user": image.user.username,
+                        "pattern": image.pattern,
+                        "like": image.like_nums,
+                        "user_id": image.user.id,
+                        "collection": image.collection_nums,
+                        "user_image": user_url,
+                        "height": image.image.height,
+                        "width": image.image.width,
+                        "download_nums": image.download_nums,
+                        "name": image.name,
+                    }
+                    datas.append(data)
             return AltHttpResponse(json.dumps(datas))
         else:
             response = AltHttpResponse(json.dumps({"error": "参数错误"}))
@@ -388,23 +389,24 @@ class ImageUser(View):
                                                if_active=True).order_by[::-1][start:start+num]
             datas = []
             for image in images:
-                user_url = image.user.image.url
-                data = {
-                    "id": image.id,
-                    "image": image.image['avatar'].url,  # 缩略图
-                    "desc": image.desc,
-                    "user": image.user.username,
-                    "pattern": image.pattern,
-                    "cates": image.cates,
-                    "like": image.like_nums,
-                    "collection": image.collection_nums,
-                    "height": image.image.height,
-                    "width": image.image.width,
-                    "download_nums": image.download_nums,
-                    "user_image": user_url,
-                    "name": image.name,
-                }
-                datas.append(data)
+                if image and image.if_active:
+                    user_url = image.user.image.url
+                    data = {
+                        "id": image.id,
+                        "image": image.image['avatar'].url,  # 缩略图
+                        "desc": image.desc,
+                        "user": image.user.username,
+                        "pattern": image.pattern,
+                        "cates": image.cates,
+                        "like": image.like_nums,
+                        "collection": image.collection_nums,
+                        "height": image.image.height,
+                        "width": image.image.width,
+                        "download_nums": image.download_nums,
+                        "user_image": user_url,
+                        "name": image.name,
+                    }
+                    datas.append(data)
             return AltHttpResponse(json.dumps(datas))
         else:
             response = AltHttpResponse(json.dumps({"error": "参数错误"}))
@@ -488,6 +490,8 @@ class ImageLike(View):
             /image/like
         method:
             POST
+        params:
+            *:image-id
         success:
             status_code: 200
             json={
@@ -516,8 +520,9 @@ class ImageLike(View):
         """
         user = request.user
         image_id = request.POST.get("image-id")
+        print(image_id)
         if image_id:
-            image = ImageModel.objects.get(id=image_id)
+            image = ImageModel.objects.get(id=int(image_id))
             if not image.if_active:
                 response = AltHttpResponse(json.dumps({"error": "图片未审查"}))
                 response.status_code = 404
@@ -647,7 +652,7 @@ class ImageCollect(View):
         method:
             POST
         params:
-            *:num (url)
+            *:image-id 
         success:
             status_code: 200
             json={
@@ -880,7 +885,7 @@ class GetImage(View):
         user_url = image.user.image.url
         data = {
             "id": image.id,
-            "image": image.image['replace'].url,
+            "image": image.image.url,
             "desc": image.desc,
             "user": image.user.username,
             "pattern": image.pattern,
