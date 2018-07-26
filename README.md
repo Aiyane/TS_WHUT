@@ -1421,6 +1421,11 @@ success:
         "name": str,
         }
      ]
+failure:
+        status_code: 400
+        json{
+            "error": "参数错误"
+        }
 ```
 ### 总收藏量排行榜
 ```
@@ -1448,6 +1453,11 @@ success:
         "name": str,
         }
      ]
+failure:
+        status_code: 400
+        json{
+            "error": "参数错误"
+        } 
 ```
 ### 总关注量排行榜
 ```
@@ -1468,4 +1478,9 @@ success:
         "follow_nums": int,
         }
      ]
+failure:
+        status_code: 400
+        json{
+            "error": "参数错误"
+        }
 ```
