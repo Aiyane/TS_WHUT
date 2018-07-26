@@ -59,6 +59,9 @@
     - [获取一定数量的类别名](#获取一定数量的类别名)
     - [检索](#检索)
     - [获取用户全部消息](#获取用户全部消息)
+    - [总下载量排行榜](#总下载量排行榜)
+    - [总收藏量排行榜](#总收藏量排行榜)
+    - [总关注量排行榜](#总关注量排行榜)
 
 ## 用户操作
 ### 登录状态获得用户信息
@@ -210,7 +213,6 @@ success:
         "id": int,
         "username": str,
         "email": str,
-        "if_sign": bool, (是否签约)
         "gender": str, (male或female)
         "image": str, (url)
         "fan_nums": int,
@@ -1345,7 +1347,7 @@ url:
 method:
     GET 
 params:
-    :keywords (关键字)
+    *:keywords (关键字)
 success:
     status_code: 200
     json=[
@@ -1392,4 +1394,78 @@ failure:
     json={
         "error": "用户未登录"
     }
+```
+### 总下载量排行榜
+```
+url:
+    /rank/download/
+method:
+    GET
+success:
+    status_code: 200
+    json[
+        {
+        "id": int,
+        "image": str,
+        "desc": str,
+        "cates": str,
+        "user": str,
+        "user_image": str, (用户头像)
+        "pattern": str,
+        "like": int,
+        "collection": int,
+        "height": int,
+        "user_id": int,
+        "width": int,
+        "download_nums": int,
+        "name": str,
+        }
+     ]
+```
+### 总收藏量排行榜
+```
+url:
+    /rank/folder/
+method:
+    GET
+success:
+    status_code: 200
+    json[
+        {
+        "id": int,
+        "image": str,
+        "desc": str,
+        "cates": str,
+        "user": str,
+        "user_image": str, (用户头像)
+        "pattern": str,
+        "like": int,
+        "collection": int,
+        "height": int,
+        "user_id": int,
+        "width": int,
+        "download_nums": int,
+        "name": str,
+        }
+     ]
+```
+### 总关注量排行榜
+```
+url:
+    /rank/follow/
+method:
+    GET
+success:
+    status_code: 200
+    json[
+        {
+        "id": int,
+        "username": str,
+        "email": str,
+        "gender": str, (male或female)
+        "image": str, (url)
+        "fan_nums": int,
+        "follow_nums": int,
+        }
+     ]
 ```
