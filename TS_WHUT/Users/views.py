@@ -14,7 +14,7 @@ from django.contrib.auth import login, authenticate, logout
 from .forms import RegisterForm
 import json
 
-from .models import UserProfile, ImageModel, DownloadShip, Follow, Folder, Comment, CommentLike
+from .models import UserProfile, ImageModel, DownloadShip, Follow, Folder, Comment, CommentLike, FolderImage
 from operation.models import UserMessage
 
 from utils.send_email import send_register_email
@@ -1073,3 +1073,49 @@ class UserCommentLike(View):
         comment.like -= 1
         comment.save()
         return AltHttpResponse(json.dumps({"status": "true"}))
+
+
+class ImageIdFolder(View):
+    @is_login
+    def post(self, request):
+        """获取用户全部收藏夹及是否图片在收藏夹中
+        url:
+            /user/folder/image/
+        method:
+            POST
+        params:
+            *:id (图片id)
+        success:
+            status_code: 200
+            json=[
+                {
+                    "id": int,
+                    "name": str,
+                    "nums": int,
+                    "add_time": str, (创建时间)
+                    "has": has, (图片是否在收藏夹中)
+                }
+            ]
+        failure:
+            status_code: 404
+            json={
+                "error": "用户未登录"
+            }
+        """
+        image_id = request.POST.get("id")
+        user = request.user
+        folders = Folder.objects.filter(user=user)
+        image = ImageModel.objects.get(id=image_id)
+        datas = []
+        for folder in folders:
+            has = 'false'
+            if FolderImage.objects.filter(image=image, folder=folder):
+                has = 'true' 
+            datas.append({
+                "id": folder.id,
+                "name": folder.name,
+                "nums": folder.nums,
+                "add_time": folder.add_time,
+                "has": has,
+            })
+        return AltHttpResponse(json.dumps(data))

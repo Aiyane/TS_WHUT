@@ -20,7 +20,8 @@ from django.conf import settings
 import xadmin
 from operation.views import ActiveUserView, CatesView, GetMsg
 from Users.views import (RegisterView, LoginView, GetUserMsgView, UserDownload, UserUpload, UserCommentLike,
-                         LogoutView, History, FollowView, IsLogin, Following, FollowNum, FanNum, UserFolder)
+                         LogoutView, History, FollowView, IsLogin, Following, FollowNum, FanNum, UserFolder,
+                         ImageIdFolder)
 from Images.views import (ImageView, ImageCateView, Download, GetImage, ImageFolder,
                           ImagePattern, ImageUser, ImageLike, ImageCollect, Banner, ImageComment)
 
@@ -40,6 +41,7 @@ urlpatterns = [
     path('user/download/', UserDownload.as_view(), name="user_download"),
     path('user/upload/', UserUpload.as_view(), name="user_upload"),
     path('user/folder/', UserFolder.as_view(), name="user_folder"),
+    path('user/folder/image/', ImageIdFolder.as_view(), name="image_id_folder"),
     path('user/comment/like/', UserCommentLike.as_view(), name="comment_like"),
 
 

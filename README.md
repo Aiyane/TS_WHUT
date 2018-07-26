@@ -33,6 +33,7 @@
     - [创建一个收藏夹](#创建一个收藏夹)
     - [修改收藏夹名字](#修改收藏夹名字)
     - [删除收藏夹](#删除收藏夹)
+    - [获取用户全部收藏夹及是否图片在收藏夹中](#获取用户全部收藏夹及是否图片在收藏夹中)
 - [图片操作](#图片操作)
     - [上传图片](#上传图片)
     - [删除图片](#删除图片)
@@ -666,6 +667,31 @@ failure:
     json={
         "error": "参数错误"
     }
+failure:
+    status_code: 404
+    json={
+        "error": "用户未登录"
+    }
+```
+### 获取用户全部收藏夹及是否图片在收藏夹中
+```
+url:
+    /user/folder/image/
+method:
+    POST
+params:
+    *:id (图片id)
+success:
+    status_code: 200
+    json=[
+        {
+            "id": int,
+            "name": str,
+            "nums": int,
+            "add_time": str, (创建时间)
+            "has": has, (图片是否在收藏夹中)
+        }
+    ]
 failure:
     status_code: 404
     json={
