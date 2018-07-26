@@ -74,6 +74,7 @@ class ImageModel(models.Model):
     user = models.ForeignKey(UserProfile, models.SET_NULL, null=True, verbose_name="上传人")
     pattern = models.CharField(max_length=10, verbose_name="格式")
     like_nums = models.IntegerField(default=0, verbose_name="点赞数")
+    download_num = models.IntegerField(default=0, verbose_name="下载量")
     width = models.IntegerField(default=0, verbose_name="宽")
     heigth = models.IntegerField(default=0, verbose_name="高")
 
