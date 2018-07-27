@@ -393,6 +393,11 @@ success:
     json={
         "status": "true"
     }
+success:
+    status_code: 200
+    json={
+        "status": "已关注"
+    }
 failure:
     status_code: 404
     json={
@@ -402,11 +407,6 @@ failure:
     status_code: 400
     json={
         "error": "参数错误"
-    }
-failure:
-    status_code: 400
-    json={
-        "error": "已关注"
     }
 ```
 ### 取消关注
@@ -986,6 +986,11 @@ success:
     json={
         "status": "true"
     }
+success:
+    status_code: 200
+    json={
+        "status": "已点赞"
+    }
 failure:
     status_code: 400
     json={
@@ -995,11 +1000,6 @@ failure:
     status_code: 404
     json={
         "error": "图片未审查"
-    }
-failure:
-    status_code: 400
-    json={
-        "error": "已点赞"
     }
 ```
 ### 取消点赞
@@ -1064,6 +1064,11 @@ success:
     json={
         "status": "true"
     }
+success:
+    status_code: 200
+    json={
+        "status": "已收藏"
+    }
 failure:
     status_code: 400
     json={
@@ -1073,11 +1078,6 @@ failure:
     status_code: 404
     json={
         "error": "图片未审查"
-    }
-failure:
-    status_code: 400
-    json={
-        "error": "已收藏"
     }
 ```
 ### 取消收藏
@@ -1249,6 +1249,11 @@ success:
     json={
         "status": "true"
     }
+success:
+    status_code: 200
+    json={
+        "status": "已收藏"
+    }
 failure:
     status_code: 400
     json={
@@ -1263,11 +1268,6 @@ failure:
     status_code: 404
     json={
         "error": "不能修改其他用户收藏"
-    }
-failure:
-    status_code: 400
-    json={
-        "error": "已收藏"
     }
 ```
 ### 向收藏夹中删除一张图片
