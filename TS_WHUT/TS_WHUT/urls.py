@@ -21,7 +21,7 @@ import xadmin
 from operation.views import ActiveUserView, CatesView, GetMsg
 from Users.views import (RegisterView, LoginView, GetUserMsgView, UserDownload, UserUpload, UserCommentLike,
                          LogoutView, History, FollowView, IsLogin, Following, FollowNum, FanNum, UserFolder,
-                         ImageIdFolder)
+                         ImageIdFolder, SignedUser)
 from Images.views import (ImageView, ImageCateView, Download, GetImage, ImageFolder,
                           ImagePattern, ImageUser, ImageLike, ImageCollect, Banner, ImageComment)
 
@@ -43,6 +43,7 @@ urlpatterns = [
     path('user/folder/', UserFolder.as_view(), name="user_folder"),
     path('user/folder/image/', ImageIdFolder.as_view(), name="image_id_folder"),
     path('user/comment/like/', UserCommentLike.as_view(), name="comment_like"),
+    path('user/signed/', SignedUser.as_view(), name="signed"),
 
 
     path('image/', ImageView.as_view(), name="image"),
@@ -60,7 +61,7 @@ urlpatterns = [
     path('active/<str:active_code>/', ActiveUserView.as_view(), name="user_active"),
     path('cates/', CatesView.as_view(), name="cates"),
     path('message/', GetMsg.as_view(), name="get_message"),
-    path('search/', include('haystack.urls'), name='search'),
+    path('search/', include('haystack.urls'), name='search'),  # 检索
 ]
 
 if settings.DEBUG:

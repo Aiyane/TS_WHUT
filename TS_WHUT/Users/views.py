@@ -398,7 +398,7 @@ class UserDownload(View):
         user = request.user
         num = int(request.GET.get("num"))
         ships = DownloadShip.objects.filter(
-            user=user).order_by("-add_time")[:num]
+            user=user)[:-1][:num]
         download_images = []
         upload_images = []
         for ship in ships:
@@ -458,7 +458,7 @@ class UserUpload(View):
         user = request.user
         num = int(request.GET.get("num"))
         images = ImageModel.objects.filter(
-            user=user).order_by("-add_time")[:num]
+            user=user)[::-1][:num]
         upload_images = []
         for image in images:
             user_url = image.user.image.url
@@ -1118,4 +1118,76 @@ class ImageIdFolder(View):
                 "add_time": folder.add_time,
                 "has": has,
             })
+        return AltHttpResponse(json.dumps(datas))
+
+
+class SignedUser(View):
+    def get(self, request):
+        """获取签约用户信息列表
+        url:
+            /user/signed/
+        method:
+            GET
+        params:
+            *:num (用户数目)
+        success:
+            status_code: 200
+            json=[
+                {
+                    "id": int,
+                    "username": str,
+                    "image": str,
+                    "upload_nums": int,
+                    "fan_nums": int,
+                    "follow_nums": int,
+                    "upload_images": [  # 列表长度为3
+                        {
+                            "id": int,
+                            "image": str,  # 缩略图
+                            "desc": str,
+                            "pattern": str,
+                            "like": int,
+                            "collection": int,
+                            "download_nums": int,
+                            "name": str, 
+                        }
+                    ],
+                }
+            ]
+        failure:
+            status_code: 400
+            json={
+                "error": "参数错误"
+            }
+        """
+        num = int(request.GET.get("num"))
+        if not num:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+        users = UserProfile.objects.filter(if_sign=True)[::-1]
+        data = []
+        for user in users[:num]:
+            images = []
+            for image in ImageModel.objects.filter(user=user, if_active=True)[::-1][:3]:
+                images.append({
+                    "id": image.id,
+                    "image": image.image['avatar'].url,  # 缩略图
+                    "desc": image.desc,
+                    "pattern": image.pattern,
+                    "like": image.like_nums,
+                    "collection": image.collection_nums,
+                    "download_nums": image.download_nums,
+                    "name": image.name,
+                })
+            data.append({
+                "id": user.id,
+                "username": user.username,
+                "image": user.image.url,
+                "upload_nums": user.upload_nums,
+                "fan_nums": user.fan_nums,
+                "follow_nums": user.follow_nums,
+                "upload_images": images,
+            })
         return AltHttpResponse(json.dumps(data))
+            

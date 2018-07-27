@@ -34,6 +34,7 @@
     - [修改收藏夹名字](#修改收藏夹名字)
     - [删除收藏夹](#删除收藏夹)
     - [获取用户全部收藏夹及是否图片在收藏夹中](#获取用户全部收藏夹及是否图片在收藏夹中)
+    - [获取签约用户信息列表](#获取签约用户信息列表)
 - [图片操作](#图片操作)
     - [上传图片](#上传图片)
     - [删除图片](#删除图片)
@@ -696,6 +697,44 @@ failure:
     status_code: 404
     json={
         "error": "用户未登录"
+    }
+```
+### 获取签约用户信息列表
+```
+url:
+    /user/signed/
+method:
+    GET
+params:
+    *:num (用户数目)
+success:
+    status_code: 200
+    json=[
+        {
+            "id": int,
+            "username": str,
+            "image": str,
+            "upload_nums": int,
+            "fan_nums": int,
+            "follow_nums": int,
+            "upload_images": [  # 列表长度为3
+                {
+                    "id": int,
+                    "image": str,  # 缩略图
+                    "desc": str,
+                    "pattern": str,
+                    "like": int,
+                    "collection": int,
+                    "download_nums": int,
+                    "name": str, 
+                }
+            ],
+        }
+    ]
+failure:
+    status_code: 400
+    json={
+        "error": "参数错误"
     }
 ```
 ## 图片操作
@@ -1459,7 +1498,7 @@ failure:
 ### 总收藏量排行榜
 ```
 url:
-    /rank/folder/
+    /rank/collect/
 method:
     GET
 success:
