@@ -1497,6 +1497,7 @@ success:
             "username": str,
             "image": str,
             "upload_nums": int,
+            "if_sign": str,
             "fan_nums": int,
             "follow_nums": int,
             "upload_images": [  # 列表长度为3
@@ -1533,6 +1534,7 @@ success:
         {
             "id": int,
             "username": str,
+            "if_sign": str,
             "image": str,
             "upload_nums": int,
             "fan_nums": int,
@@ -1570,6 +1572,7 @@ success:
     json=[
         {
             "id": int,
+            "if_sign": str,
             "username": str,
             "image": str,
             "upload_nums": int,

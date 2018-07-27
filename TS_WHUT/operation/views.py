@@ -236,9 +236,11 @@ class DownloadRank(View):
             response.status_code = 400
             return response
         users = UserProfile.objects.all()
-        users = sorted(users, lambda x: x.download_nums, True)
+        users = sorted(users, key=lambda x: x.download_nums, reverse=True)
         data = []
-        for user in users[:num]:
+        for i, user in enumerate(users):
+            if i == int(num):
+                break
             images = []
             for image in ImageModel.objects.filter(user=user, if_active=True)[::-1][:3]:
                 images.append({
@@ -253,6 +255,7 @@ class DownloadRank(View):
                 })
             data.append({
                 "id": user.id,
+                "if_sign": user.if_sign,
                 "username": user.username,
                 "image": user.image.url,
                 "upload_nums": user.upload_nums,
@@ -307,9 +310,11 @@ class CollectRank(View):
             response.status_code = 400
             return response
         users = UserProfile.objects.all()
-        users = sorted(users, lambda x: x.collection_nums, True)
+        users = sorted(users, key=lambda x: x.collection_nums, reverse=True)
         data = []
-        for user in users[:num]:
+        for i, user in enumerate(users):
+            if i == int(num):
+                break
             images = []
             for image in ImageModel.objects.filter(user=user, if_active=True)[::-1][:3]:
                 images.append({
@@ -324,6 +329,7 @@ class CollectRank(View):
                 })
             data.append({
                 "id": user.id,
+                "if_sign": user.if_sign,
                 "username": user.username,
                 "image": user.image.url,
                 "upload_nums": user.upload_nums,
@@ -379,9 +385,11 @@ class FollowRank(View):
             response.status_code = 400
             return response
         users = UserProfile.objects.all()
-        users = sorted(users, lambda x: x.fan_nums, True)
+        users = sorted(users, key=lambda x: x.fan_nums, reverse=True)
         data = []
-        for user in users[:num]:
+        for i, user in enumerate(users):
+            if i == int(num):
+                break
             images = []
             for image in ImageModel.objects.filter(user=user, if_active=True)[::-1][:3]:
                 images.append({
@@ -396,6 +404,7 @@ class FollowRank(View):
                 })
             data.append({
                 "id": user.id,
+                "if_sign": user.if_sign,
                 "username": user.username,
                 "image": user.image.url,
                 "upload_nums": user.upload_nums,
