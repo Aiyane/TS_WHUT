@@ -816,6 +816,9 @@ success:
             "width": int,
             "download_nums": int,
             "name": str,
+            "if_like": str,
+            "if_collect": str,
+            "if_follow": str,
         }
     ]
 failure:
@@ -852,6 +855,9 @@ success:
             "width": int,
             "download_nums": int,
             "name": str,
+            "if_like": str,
+            "if_collect": str,
+            "if_follow": str,
         }
     ]
 failure:
@@ -887,6 +893,9 @@ success:
             "width": int,
             "download_nums": int,
             "name": str,
+            "if_like": str,
+            "if_collect": str,
+            "if_follow": str,
         }
     ]
 failure:
@@ -922,6 +931,8 @@ success:
             "width": int,
             "download_nums": int,
             "name": str,
+            "if_like": str,
+            "if_collect": str,
         }
     ]
 failure:
@@ -1433,6 +1444,9 @@ success:
             "user_image": str,
             "download_nums": int,
             "name": str,
+            "if_like": str,
+            "if_collect": str,
+            "if_follow": str,
         }
     ]
 failure:

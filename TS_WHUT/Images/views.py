@@ -4,7 +4,7 @@ from django.http import QueryDict
 import imghdr
 import json
 
-from Users.models import (ImageModel, GroupImage, UserProfile, LikeShip, Collection,
+from Users.models import (ImageModel, GroupImage, UserProfile, LikeShip, Collection, Follow,
                           BannerModel, FolderImage, Folder, Comment)
 from operation.models import UserMessage
 from utils.is_login import is_login
@@ -138,6 +138,9 @@ class ImageView(View):
                     "width": int,
                     "download_nums": int,
                     "name": str,
+                    "if_like": str,
+                    "if_collect": str,
+                    "if_follow": str,
                 }
             ]
         failure:
@@ -162,6 +165,16 @@ class ImageView(View):
             try:
                 for image in contacts:
                     user_url = image.user.image.url
+                    like = 'false'
+                    collect = 'false'
+                    follow = 'false'
+                    user = request.user
+                    if LikeShip.objects.filter(user=user, image=image):
+                        like = 'true'
+                    if Collection.objects.filter(user=user, image=image):
+                        collect = 'true'
+                    if Follow.objects.filter(fan=user, follow=image.user):
+                        follow = 'true'
                     data = {
                         "id": image.id,
                         "image": image.image['avatar'].url,  # 缩略图
@@ -177,6 +190,9 @@ class ImageView(View):
                         "width": image.image.width,
                         "download_nums": image.download_nums,
                         "name": image.name,
+                        "if_like": like,
+                        "if_collect": collect,
+                        "if_follow": follow,
                     }
                     datas.append(data)
             except:
@@ -213,6 +229,9 @@ class ImageCateView(View):
                     "width": int,
                     "download_nums": int,
                     "name": str,
+                    "if_like": str,
+                    "if_collect": str,
+                    "if_follow": str,
                 }
             ]
         failure:
@@ -238,6 +257,16 @@ class ImageCateView(View):
                 image = group.image
                 if image and image.if_active:
                     user_url = image.user.image.url
+                    like = 'false'
+                    collect = 'false'
+                    follow = 'false'
+                    user = request.user
+                    if LikeShip.objects.filter(user=user, image=image):
+                        like = 'true'
+                    if Collection.objects.filter(user=user, image=image):
+                        collect = 'true'
+                    if Follow.objects.filter(fan=user, follow=image.user):
+                        follow = 'true'
                     data = {
                         "id": image.id,
                         "image": image.image['avatar'].url,  # 缩略图
@@ -253,6 +282,9 @@ class ImageCateView(View):
                         "width": image.image.width,
                         "download_nums": image.download_nums,
                         "name": image.name,
+                        "if_like": like,
+                        "if_collect": collect,
+                        "if_follow": follow,
                     }
                     datas.append(data)
             return AltHttpResponse(json.dumps(datas))
@@ -290,6 +322,9 @@ class ImagePattern(View):
                     "width": int,
                     "download_nums": int,
                     "name": str,
+                    "if_like": str,
+                    "if_collect": str,
+                    "if_follow": str,
                 }
             ]
         failure:
@@ -314,6 +349,16 @@ class ImagePattern(View):
             for image in images:
                 if image and image.if_active:
                     user_url = image.user.image.url
+                    like = 'false'
+                    collect = 'false'
+                    follow = 'false'
+                    user = request.user
+                    if LikeShip.objects.filter(user=user, image=image):
+                        like = 'true'
+                    if Collection.objects.filter(user=user, image=image):
+                        collect = 'true'
+                    if Follow.objects.filter(fan=user, follow=image.user):
+                        follow = 'true'
                     data = {
                         "id": image.id,
                         "image": image.image['avatar'].url,  # 缩略图
@@ -329,6 +374,9 @@ class ImagePattern(View):
                         "width": image.image.width,
                         "download_nums": image.download_nums,
                         "name": image.name,
+                        "if_like": like,
+                        "if_collect": collect,
+                        "if_follow": follow,
                     }
                     datas.append(data)
             return AltHttpResponse(json.dumps(datas))
@@ -366,6 +414,8 @@ class ImageUser(View):
                     "width": int,
                     "download_nums": int,
                     "name": str,
+                    "if_like": str,
+                    "if_collect": str,
                 }
             ]
         failure:
@@ -391,6 +441,13 @@ class ImageUser(View):
             for image in images:
                 if image and image.if_active:
                     user_url = image.user.image.url
+                    like = 'false'
+                    collect = 'false'
+                    r_user = request.user
+                    if LikeShip.objects.filter(user=r_user, image=image):
+                        like = 'true'
+                    if Collection.objects.filter(user=r_user, image=image):
+                        collect = 'true'
                     data = {
                         "id": image.id,
                         "image": image.image['avatar'].url,  # 缩略图
@@ -405,6 +462,8 @@ class ImageUser(View):
                         "download_nums": image.download_nums,
                         "user_image": user_url,
                         "name": image.name,
+                        "if_like": like,
+                        "if_collect": collect,
                     }
                     datas.append(data)
             return AltHttpResponse(json.dumps(datas))

@@ -2,7 +2,7 @@ from django.views.generic.base import View
 # 对用户名密码校验，后一个发出一个session登录，登出
 from django.contrib.auth import authenticate, login, logout
 from utils.send_email import send_register_email
-from Users.models import UserProfile, EmailVerifyRecord, GroupImage, Folder
+from Users.models import UserProfile, EmailVerifyRecord, GroupImage, Folder, ImageModel
 from django.http import QueryDict
 from django.contrib.auth.hashers import make_password
 from .models import UserMessage
@@ -153,6 +153,7 @@ class CatesView(View):
             datas.append(group.name)
         return AltHttpResponse(json.dumps(datas))
 
+
 class GetMsg(View):
     @is_login
     def get(self, request):
@@ -188,3 +189,23 @@ class GetMsg(View):
                 "add_time": msg.add_time,
             })
         return AltHttpResponse(json.dumps(data))
+
+
+class DownloadRank(view):
+    def get(self, request):
+        num = request.GET.get('num')
+        if not num:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+        
+
+
+class CollectRank(View):
+    def get(self, request):
+        pass
+
+
+class FollowRank(View):
+    def get(self, request):
+        pass

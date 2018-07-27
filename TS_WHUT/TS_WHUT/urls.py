@@ -18,7 +18,7 @@ from django.conf.urls.static import static
 from django.conf.urls import include
 from django.conf import settings
 import xadmin
-from operation.views import ActiveUserView, CatesView, GetMsg
+from operation.views import ActiveUserView, CatesView, GetMsg, DownloadRank, CollectRank, FollowRank
 from Users.views import (RegisterView, LoginView, GetUserMsgView, UserDownload, UserUpload, UserCommentLike,
                          LogoutView, History, FollowView, IsLogin, Following, FollowNum, FanNum, UserFolder,
                          ImageIdFolder, SignedUser)
@@ -62,6 +62,9 @@ urlpatterns = [
     path('cates/', CatesView.as_view(), name="cates"),
     path('message/', GetMsg.as_view(), name="get_message"),
     path('search/', include('haystack.urls'), name='search'),  # 检索
+    path('/rank/download/', DownloadRank.as_view(), name='download_rank'),
+    path('/rank/collect/', CollectRank.as_view(), name='collect_rank'),
+    path('/rank/follow/', FollowRank.as_view(), name='follow_rank'),
 ]
 
 if settings.DEBUG:

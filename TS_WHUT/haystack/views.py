@@ -244,6 +244,16 @@ def basic_search(request, template='search/search.html', load_all=True, form_cla
         image = result.object
         if image.if_active:
             user_url = image.user.image.url
+            like = 'false'
+            collect = 'false'
+            follow = 'false'
+            user = request.user
+            if LikeShip.objects.filter(user=user, image=image):
+                like = 'true'
+            if Collection.objects.filter(user=user, image=image):
+                collect = 'true'
+            if Follow.objects.filter(fan=user, follow=image.user):
+                follow = 'true'
             data.append({
                 "id": image.id,
                 "image": image.image.url,
@@ -258,6 +268,9 @@ def basic_search(request, template='search/search.html', load_all=True, form_cla
                 "width": image.image.width,
                 "download_nums": image.download_nums,
                 "name": image.name,
+                "if_like": like,
+                "if_collect": collect,
+                "if_follow": follow,
             })
 
     return AltHttpResponse(json.dumps(data))
