@@ -1172,14 +1172,18 @@ success:
         "desc": str,
         "user": str,
         "pattern": str,
-        "cates": str,
         "like": int,
+        "user_image": str, (用户头像)
+        "user_id": int,
+        "cates": str,
         "collection": int,
         "height": int,
         "width": int,
-        "user_image": str,
         "download_nums": int,
         "name": str,
+        "if_like": str,
+        "if_collect": str,
+        "if_follow": str,
     }
 failure:
     status_code: 400

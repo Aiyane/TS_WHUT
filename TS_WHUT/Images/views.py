@@ -901,6 +901,7 @@ class Download(View):
 
 
 class GetImage(View):
+    @is_login
     def get(self, request):
         """通过图片id获取低质量图片
         url:
@@ -917,14 +918,18 @@ class GetImage(View):
                 "desc": str,
                 "user": str,
                 "pattern": str,
-                "cates": str,
                 "like": int,
+                "user_image": str, (用户头像)
+                "user_id": int,
+                "cates": str,
                 "collection": int,
                 "height": int,
                 "width": int,
-                "user_image": str,
                 "download_nums": int,
                 "name": str,
+                "if_like": str,
+                "if_collect": str,
+                "if_follow": str,
             }
         failure:
             status_code: 400
@@ -948,20 +953,35 @@ class GetImage(View):
             response.status_code = 404
             return response
         user_url = image.user.image.url
+
+        like = 'false'
+        collect = 'false'
+        follow = 'false'
+        user = request.user
+        if LikeShip.objects.filter(user=user, image=image):
+            like = 'true'
+        if Collection.objects.filter(user=user, image=image):
+            collect = 'true'
+        if Follow.objects.filter(fan=user, follow=image.user):
+            follow = 'true'
         data = {
             "id": image.id,
             "image": image.image.url,
             "desc": image.desc,
             "user": image.user.username,
-            "pattern": image.pattern,
-            "cates": image.cates,
-            "like": image.like_nums,
             "user_image": user_url,
+            "user_id": image.user.id,
+            "pattern": image.pattern,
+            "like": image.like_nums,
+            "cates": image.cates,
             "collection": image.collection_nums,
             "height": image.image.height,
             "width": image.image.width,
             "download_nums": image.download_nums,
             "name": image.name,
+            "if_like": like,
+            "if_collect": collect,
+            "if_follow": follow,
         }
         return AltHttpResponse(json.dumps(data))
 
