@@ -62,9 +62,9 @@ urlpatterns = [
     path('cates/', CatesView.as_view(), name="cates"),
     path('message/', GetMsg.as_view(), name="get_message"),
     path('search/', include('haystack.urls'), name='search'),  # 检索
-    path('/rank/download/', DownloadRank.as_view(), name='download_rank'),
-    path('/rank/collect/', CollectRank.as_view(), name='collect_rank'),
-    path('/rank/follow/', FollowRank.as_view(), name='follow_rank'),
+    path('rank/download/', DownloadRank.as_view(), name='download_rank'),
+    path('rank/collect/', CollectRank.as_view(), name='collect_rank'),
+    path('rank/follow/', FollowRank.as_view(), name='follow_rank'),
 ]
 
 if settings.DEBUG:

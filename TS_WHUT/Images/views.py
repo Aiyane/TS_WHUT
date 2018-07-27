@@ -589,6 +589,9 @@ class ImageLike(View):
             if LikeShip.objects.filter(user=user, image=image):
                 return AltHttpResponse(json.dumps({"status": "已点赞"}))
             image.like_nums += 1
+            image_user = image.user
+            image_user.like_nums += 1
+            image_user.save()
             like = LikeShip(user=user, image=image)
             like.save()
             image.save()
@@ -747,6 +750,9 @@ class ImageCollect(View):
             if Collection.objects.filter(user=user, image=image):
                 return AltHttpResponse(json.dumps({"status": "已收藏"}))
             image.collection_nums += 1
+            image_user = image.user
+            image_user.collection_nums += 1
+            image_user.save()
             image.save()
             collect = Collection(user=user, image=image)
             collect.save()
@@ -887,6 +893,10 @@ class Download(View):
             "name": image.name,
         }
         image.download_nums += 1
+        image.save()
+        image_user = image.user 
+        image_user.download_nums += 1
+        image_user.save()
         return AltHttpResponse(json.dumps(data))
 
 

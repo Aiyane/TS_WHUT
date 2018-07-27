@@ -42,6 +42,9 @@ class UserProfile(AbstractUser):
     follow_nums = models.IntegerField(verbose_name="关注者量", default=0)
     fan_nums = models.IntegerField(verbose_name="粉丝量", default=0)
     upload_nums = models.IntegerField(verbose_name="上传量", default=0)
+    like_nums = models.IntegerField(verbose_name="总点赞量", default=0)
+    collection_nums = models.IntegerField(verbose_name="总收藏量", default=0)
+    download_nums = models.IntegerField(verbose_name="总被下载量", default=0)
 
     class Meta:
         verbose_name = "用户信息"

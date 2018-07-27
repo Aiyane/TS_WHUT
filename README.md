@@ -1483,31 +1483,37 @@ url:
     /rank/download/
 method:
     GET
+params:
+    *:num (用户数目)
 success:
     status_code: 200
-    json[
+    json=[
         {
-        "id": int,
-        "image": str,
-        "desc": str,
-        "cates": str,
-        "user": str,
-        "user_image": str, (用户头像)
-        "pattern": str,
-        "like": int,
-        "collection": int,
-        "height": int,
-        "user_id": int,
-        "width": int,
-        "download_nums": int,
-        "name": str,
+            "id": int,
+            "username": str,
+            "image": str,
+            "upload_nums": int,
+            "fan_nums": int,
+            "follow_nums": int,
+            "upload_images": [  # 列表长度为3
+                {
+                    "id": int,
+                    "image": str,  # 缩略图
+                    "desc": str,
+                    "pattern": str,
+                    "like": int,
+                    "collection": int,
+                    "download_nums": int,
+                    "name": str, 
+                }
+            ],
         }
-     ]
+    ]
 failure:
-        status_code: 400
-        json{
-            "error": "参数错误"
-        }
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
 ```
 ### 总收藏量排行榜
 ```
@@ -1515,31 +1521,37 @@ url:
     /rank/collect/
 method:
     GET
+params:
+    *:num (用户数目)
 success:
     status_code: 200
-    json[
+    json=[
         {
-        "id": int,
-        "image": str,
-        "desc": str,
-        "cates": str,
-        "user": str,
-        "user_image": str, (用户头像)
-        "pattern": str,
-        "like": int,
-        "collection": int,
-        "height": int,
-        "user_id": int,
-        "width": int,
-        "download_nums": int,
-        "name": str,
+            "id": int,
+            "username": str,
+            "image": str,
+            "upload_nums": int,
+            "fan_nums": int,
+            "follow_nums": int,
+            "upload_images": [  # 列表长度为3
+                {
+                    "id": int,
+                    "image": str,  # 缩略图
+                    "desc": str,
+                    "pattern": str,
+                    "like": int,
+                    "collection": int,
+                    "download_nums": int,
+                    "name": str, 
+                }
+            ],
         }
-     ]
+    ]
 failure:
-        status_code: 400
-        json{
-            "error": "参数错误"
-        } 
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
 ```
 ### 总关注量排行榜
 ```
@@ -1547,22 +1559,35 @@ url:
     /rank/follow/
 method:
     GET
+params:
+    *:num (用户数目)
 success:
     status_code: 200
-    json[
+    json=[
         {
-        "id": int,
-        "username": str,
-        "email": str,
-        "gender": str, (male或female)
-        "image": str, (url)
-        "fan_nums": int,
-        "follow_nums": int,
+            "id": int,
+            "username": str,
+            "image": str,
+            "upload_nums": int,
+            "fan_nums": int,
+            "follow_nums": int,
+            "upload_images": [  # 列表长度为3
+                {
+                    "id": int,
+                    "image": str,  # 缩略图
+                    "desc": str,
+                    "pattern": str,
+                    "like": int,
+                    "collection": int,
+                    "download_nums": int,
+                    "name": str, 
+                }
+            ],
         }
-     ]
+    ]
 failure:
-        status_code: 400
-        json{
-            "error": "参数错误"
-        }
+    status_code: 400
+    json={
+        "error": "参数错误"
+    }
 ```
