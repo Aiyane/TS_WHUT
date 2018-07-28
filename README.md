@@ -45,9 +45,6 @@
     - [登录状态下获取一定数量的已点赞的缩略图片](#登录状态下获取一定数量的已点赞的缩略图片)
     - [点赞某图片](#点赞某图片)
     - [取消点赞](#取消点赞)
-    - [登录状态下获取一定数量的已收藏的缩略图片](#登录状态下获取一定数量的已收藏的缩略图片)
-    - [收藏某图片](#收藏某图片)
-    - [取消收藏](#取消收藏)
     - [获取轮播图](#获取轮播图)
     - [下载原图](#下载原图)
     - [通过图片id获取低质量图片](#通过图片id获取低质量图片)
@@ -1019,86 +1016,6 @@ failure:
         "error": "参数错误"
     }
 ```
-### 登录状态下获取一定数量的已收藏的缩略图片
-```
-url:
-    /image/collect/
-method:
-    GET 
-params:
-    *:num (url)
-success:
-    status_code: 200
-    json=[
-        {
-            "id": int,
-            "image": str,
-            "desc": str,
-            "cates": str,
-            "user": str,
-            "pattern": str,
-            "like": int,
-            "collection": int,
-            "height": int,
-            "width": int,
-            "download_nums": int,
-            "name": str,
-        }
-    ]
-failure:
-    status_code: 400
-    json={
-        "error": "参数错误"
-    }
-```
-### 收藏某图片
-```
-url:
-    /image/collect/
-method:
-    POST
-params:
-    *:image-id
-success:
-    status_code: 200
-    json={
-        "status": "true"
-    }
-success:
-    status_code: 200
-    json={
-        "status": "已收藏"
-    }
-failure:
-    status_code: 400
-    json={
-        "error": "参数错误"
-    }
-failure:
-    status_code: 404
-    json={
-        "error": "图片未审查"
-    }
-```
-### 取消收藏
-```
-url:
-    /image/collect/
-method:
-    DELETE
-params:
-    *:num (url)
-success:
-    status_code: 200
-    json={
-        "status": "true"
-    }
-failure:
-    status_code: 400
-    json={
-        "error": "参数错误"
-    }
-```
 ### 获取轮播图
 ```
 url:
@@ -1596,5 +1513,24 @@ failure:
     status_code: 400
     json={
         "error": "参数错误"
+    }
+```
+### 忘记密码
+```
+url:
+    /reset/
+method:
+    POST
+params:
+    *:email
+success:
+    status_code: 200
+    json={
+        "status": "true"
+    }
+failure:
+    status_code: 404
+    json={
+        "error": "不存在该用户"
     }
 ```

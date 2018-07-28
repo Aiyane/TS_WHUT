@@ -18,12 +18,12 @@ from django.conf.urls.static import static
 from django.conf.urls import include
 from django.conf import settings
 import xadmin
-from operation.views import ActiveUserView, CatesView, GetMsg, DownloadRank, CollectRank, FollowRank
+from operation.views import ActiveUserView, CatesView, GetMsg, DownloadRank, CollectRank, FollowRank, ResetView
 from Users.views import (RegisterView, LoginView, GetUserMsgView, UserDownload, UserUpload, UserCommentLike,
                          LogoutView, History, FollowView, IsLogin, Following, FollowNum, FanNum, UserFolder,
                          ImageIdFolder, SignedUser)
 from Images.views import (ImageView, ImageCateView, Download, GetImage, ImageFolder,
-                          ImagePattern, ImageUser, ImageLike, ImageCollect, Banner, ImageComment)
+                          ImagePattern, ImageUser, ImageLike, Banner, ImageComment)
 
 urlpatterns = [
     path('admin/', xadmin.site.urls),
@@ -51,7 +51,6 @@ urlpatterns = [
     path('image/pattern/', ImagePattern.as_view(), name="image_pattern"),
     path('image/user/', ImageUser.as_view(), name="image_like"),
     path('image/like/', ImageLike.as_view(), name="like"),
-    path('image/collect/', ImageCollect.as_view(), name="collect"),
     path('image/banner/', Banner.as_view(), name="Banner"),
     path('image/download/', Download.as_view(), name="download"),
     path('image/id/', GetImage.as_view(), name="get_image"),
@@ -59,6 +58,7 @@ urlpatterns = [
     path('image/comment/', ImageComment.as_view(), name="image_comment"),
 
     path('active/<str:active_code>/', ActiveUserView.as_view(), name="user_active"),
+    path('reset/', ResetView.as_view(), name="reset"),
     path('cates/', CatesView.as_view(), name="cates"),
     path('message/', GetMsg.as_view(), name="get_message"),
     path('search/', include('haystack.urls'), name='search'),  # 检索

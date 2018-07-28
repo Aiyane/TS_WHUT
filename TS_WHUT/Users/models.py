@@ -36,7 +36,7 @@ class UserProfile(AbstractUser):
                               blank=True, verbose_name="手机号码")
     number = models.CharField(max_length=20, verbose_name="学号",
                               null=True, blank=True)
-    image = models.ImageField(upload_to="heads/%Y/%m", default="heads/default.png",
+    image = models.ImageField(upload_to="heads/%Y/%m", default="heads/default.png", null=True, blank=True,
                               storage=ImageStorage(), max_length=100, verbose_name="头像")
     if_sign = models.BooleanField(verbose_name="签约", default=False)
     follow_nums = models.IntegerField(verbose_name="关注者量", default=0)
@@ -60,6 +60,7 @@ class Follow(models.Model):
                                on_delete=models.SET_NULL, null=True, verbose_name="被关注者")
     fan = models.ForeignKey(UserProfile, related_name="fan_user",
                             on_delete=models.SET_NULL, null=True, verbose_name="粉丝")
+    add_time = models.DateField(default=datetime.now, verbose_name="关注时间")
 
     class Meta:
         verbose_name = "关注关系"
@@ -121,19 +122,6 @@ class GroupImage(models.Model):
         return self.name
 
 
-class Collection(models.Model):
-    # 收藏关系
-    user = models.ForeignKey(UserProfile, on_delete=models.SET_NULL,
-                             null=True, verbose_name="用户名")
-    image = models.ForeignKey(ImageModel, on_delete=models.SET_NULL,
-                              null=True, verbose_name="图片")
-    add_time = models.DateField(default=datetime.now, verbose_name="收藏时间")
-
-    class Meta:
-        verbose_name = "收藏"
-        verbose_name_plural = verbose_name
-
-
 class LikeShip(models.Model):
     # 点赞关系
     user = models.ForeignKey(UserProfile, on_delete=models.SET_NULL,
@@ -178,6 +166,8 @@ class FolderImage(models.Model):
                                null=True, verbose_name="文件夹")
     image = models.ForeignKey(ImageModel, on_delete=models.SET_NULL,
                               null=True, verbose_name="图片")
+    user = models.ForeignKey(UserProfile, on_delete=models.SET_NULL,
+                             null=True, verbose_name="用户")
     add_time = models.DateField(default=datetime.now, verbose_name="添加时间")
 
     class Meta:
@@ -200,9 +190,10 @@ class Comment(models.Model):
         verbose_name = "评论"
         verbose_name_plural = verbose_name
 
+
 class CommentLike(models.Model):
-    comment = models.ForeignKey(Comment, on_delete=models.SET_NULL, 
+    comment = models.ForeignKey(Comment, on_delete=models.SET_NULL,
                                 null=True, verbose_name="评论")
-    user = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, 
+    user = models.ForeignKey(UserProfile, on_delete=models.SET_NULL,
                              null=True, verbose_name="用户")
     add_time = models.DateField(default=datetime.now, verbose_name="添加时间")

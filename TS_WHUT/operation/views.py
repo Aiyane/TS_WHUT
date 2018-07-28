@@ -13,10 +13,25 @@ import json
 
 
 class ResetView(View):
-    # def get(self, request):
-        # return render(request, 'reset.html', {'error': ''})
-
     def post(self, request):
+        """修改密码
+        url:
+            /reset/
+        method:
+            POST
+        params:
+            *:email
+        success:
+            status_code: 200
+            json={
+                "status": "true"
+            }
+        failure:
+            status_code: 404
+            json={
+                "error": "不存在该用户"
+            }
+        """
         email = request.POST.get("email", "")
         user = UserProfile.objects.filter(email=email)[0]
         if user and user.email == email:
@@ -26,19 +41,12 @@ class ResetView(View):
             user_message.message = "图说理工网修改密码"
             user_message.save()
 
-            password1 = request.POST.get("password1", "")
-            password2 = request.POST.get("password2", "")
-            if password1 == password2:
-                user.password = make_password(password1)
-                user.save()
-                send_register_email(email, "forget")  # 发送验证邮箱
-                # return render(request, 'reset.html', {"error": "邮箱"})
-            else:
-                error = "密码输入不一致"
-                # return render(request, "reset.html", {"error": error})
+            send_register_email(email, "forget")  # 发送验证邮箱
+            return AltHttpResponse(json.dumps({"status": "true"}))
         else:
-            error = "没有该用户"
-            # return render(request, "reset.html", {"error": error})
+            response = AltHttpResponse(json.dumps({"error":"没有该用户"}))
+            response.status_code = 404
+            return response
 
 
 class ActiveUserView(View):

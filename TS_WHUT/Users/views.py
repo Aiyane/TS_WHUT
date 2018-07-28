@@ -20,6 +20,7 @@ from operation.models import UserMessage
 from utils.send_email import send_register_email
 from utils.AltResponse import AltHttpResponse
 from utils.is_login import is_login
+from utils.date_encode import ComplexEncoder
 
 
 class RegisterView(View):
@@ -398,7 +399,7 @@ class UserDownload(View):
         user = request.user
         num = int(request.GET.get("num"))
         ships = DownloadShip.objects.filter(
-            user=user)[:-1][:num]
+            user=user)[::-1][:num]
         download_images = []
         upload_images = []
         for ship in ships:
@@ -654,9 +655,11 @@ class FollowView(View):
         user_id = int(request.POST.get("id"))
         if user_id:
             follow = UserProfile.objects.get(id=user_id)
-            if Follow.object.filter(fan=user, follow=follow):
+            if Follow.objects.filter(fan=user, follow=follow):
                 return AltHttpResponse(json.dumps({"status": "已关注"}))
             follow.fan_nums += 1
+            follow.save()
+            user.save()
             Follow(fan=user, follow=follow).save()
             return AltHttpResponse(json.dumps({"status": "true"}))
         else:
@@ -691,10 +694,12 @@ class FollowView(View):
         """
         user = request.user
         user.follow_nums -= 1
-        user_id = int(request.POST.get("id"))
+        user_id = int(request.GET.get("id"))
         if user_id:
             follow = UserProfile.objects.get(id=user_id)
             follow.fan_nums -= 1
+            follow.save()
+            user.save()
             Follow.objects.filter(fan=user, follow=follow)[0].delete()
             return AltHttpResponse(json.dumps({"status": "true"}))
         else:
@@ -975,7 +980,7 @@ class UserFolder(View):
                 "error": "不能修改其他用户"
             }
         """
-        put_get = QueryDict(request.body).get
+        put_get = request.GET.get
         folder_id = put_get("id")
         if not folder_id:
             response = AltHttpResponse(json.dumps({"error": "参数错误"}))
@@ -1061,7 +1066,7 @@ class UserCommentLike(View):
                 "error": "用户未登录"
             }
         """
-        comment_id = request.POST.get('id')
+        comment_id = request.GET.get('id')
         if not comment_id:
             response = AltHttpResponse(json.dumps({"error": "参数错误"}))
             response.status_code = 400
@@ -1103,7 +1108,7 @@ class ImageIdFolder(View):
         image_id = request.POST.get("id")
         user = request.user
         folders = Folder.objects.filter(user=user)
-        image = ImageModel.objects.get(id=image_id)
+        image = ImageModel.objects.get(id=int(image_id))
         datas = []
         for folder in folders:
             has = 'false'
@@ -1116,7 +1121,7 @@ class ImageIdFolder(View):
                 "add_time": folder.add_time,
                 "has": has,
             })
-        return AltHttpResponse(json.dumps(datas))
+        return AltHttpResponse(json.dumps(datas, cls=ComplexEncoder))
 
 
 class SignedUser(View):

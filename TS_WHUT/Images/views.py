@@ -4,7 +4,7 @@ from django.http import QueryDict
 import imghdr
 import json
 
-from Users.models import (ImageModel, GroupImage, UserProfile, LikeShip, Collection, Follow,
+from Users.models import (ImageModel, GroupImage, UserProfile, LikeShip, Follow,
                           BannerModel, FolderImage, Folder, Comment)
 from operation.models import UserMessage
 from utils.is_login import is_login
@@ -92,7 +92,7 @@ class ImageView(View):
                 "error": "没有图片文件"
             }
         """
-        put = QueryDict(request.body)
+        put = request.GET
         image_id = put.get("image-id")
         image = ImageModel.objects.get(id=image_id)
         user = request.user
@@ -171,8 +171,8 @@ class ImageView(View):
                     user = request.user
                     if LikeShip.objects.filter(user=user, image=image):
                         like = 'true'
-                    if Collection.objects.filter(user=user, image=image):
-                        collect = 'true'
+                    if ImageFolder.objects.filter(user=user, image=image):
+                        collectll = 'true'
                     if Follow.objects.filter(fan=user, follow=image.user):
                         follow = 'true'
                     data = {
@@ -263,8 +263,8 @@ class ImageCateView(View):
                     user = request.user
                     if LikeShip.objects.filter(user=user, image=image):
                         like = 'true'
-                    if Collection.objects.filter(user=user, image=image):
-                        collect = 'true'
+                    if ImageFolder.objects.filter(user=user, image=image):
+                        collectll = 'true'
                     if Follow.objects.filter(fan=user, follow=image.user):
                         follow = 'true'
                     data = {
@@ -355,8 +355,8 @@ class ImagePattern(View):
                     user = request.user
                     if LikeShip.objects.filter(user=user, image=image):
                         like = 'true'
-                    if Collection.objects.filter(user=user, image=image):
-                        collect = 'true'
+                    if ImageFolder.objects.filter(user=user, image=image):
+                        collectll = 'true'
                     if Follow.objects.filter(fan=user, follow=image.user):
                         follow = 'true'
                     data = {
@@ -446,8 +446,8 @@ class ImageUser(View):
                     r_user = request.user
                     if LikeShip.objects.filter(user=r_user, image=image):
                         like = 'true'
-                    if Collection.objects.filter(user=r_user, image=image):
-                        collect = 'true'
+                    if ImageFolder.objects.filter(user=r_user, image=image):
+                        collectll = 'true'
                     data = {
                         "id": image.id,
                         "image": image.image['avatar'].url,  # 缩略图
@@ -579,7 +579,6 @@ class ImageLike(View):
         """
         user = request.user
         image_id = request.POST.get("image-id")
-        print(image_id)
         if image_id:
             image = ImageModel.objects.get(id=int(image_id))
             if not image.if_active:
@@ -625,170 +624,15 @@ class ImageLike(View):
             }
         """
         user = request.user
-        put = QueryDict(request.body)
-        image_id = put.get("image-id")
-        image = ImageModel.objects.get(id=image_id)
+        image_id = request.GET.get("image-id")
+        if not image_id:
+            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
+            response.status_code = 400
+            return response
+        image = ImageModel.objects.get(id=int(image_id))
         image.like_nums -= 1
         image.save()
         LikeShip.objects.filter(user=user, image=image)[0].delete()
-        return AltHttpResponse(json.dumps({"status": "true"}))
-
-
-class ImageCollect(View):
-    @is_login
-    def get(self, request):
-        """登录状态下获取一定数量的已收藏的缩略图片
-        url:
-            /image/collect
-        method:
-            GET 
-        params:
-            *:num (url)
-        success:
-            status_code: 200
-            json=[
-                {
-                    "id": int,
-                    "image": str,
-                    "desc": str,
-                    "user": str,
-                    "pattern": str,
-                    "cates": str,
-                    "like": int,
-                    "collection": int,
-                    "height": int,
-                    "width": int,
-                    "user_image": str,
-                    "download_nums": int,
-                    "name": str,
-                }
-            ]
-        failure:
-            status_code: 400
-            json={
-                "error": "参数错误"
-            }
-        failure:
-            status_code: 404
-            json={
-                "error": "用户未登录"
-            }
-        """
-        user = request.user
-        user = request.user
-        num = int(request.GET.get("num"))
-        if not num:
-            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
-            response.status_code = 400
-            return response
-        collects = Collection.objects.filter(user=user)[:num]
-        datas = []
-        for collect in collects:
-            image = collect.image
-            user_url = image.user.image.url
-            data = {
-                "id": image.id,
-                "image": image.image['avatar'].url,
-                "desc": image.desc,
-                "user": image.user.username,
-                "pattern": image.pattern,
-                "cates": image.cates,
-                "like": image.like_nums,
-                "collection": image.collection_nums,
-                "height": image.image.height,
-                "width": image.image.width,
-                "user_image": user_url,
-                "download_nums": image.download_nums,
-                "name": image.name,
-            }
-            datas.append(data)
-        return AltHttpResponse(json.dumps(datas))
-
-    @is_login
-    def post(self, request):
-        """收藏某图片
-        url:
-            /image/collect
-        method:
-            POST
-        params:
-            *:image-id 
-        success:
-            status_code: 200
-            json={
-                "status": "true"
-            }
-        success:
-            status_code: 200
-            json={
-                "status": "已收藏"
-            }
-        failure:
-            status_code: 400
-            json={
-                "error": "参数错误"
-            }
-        failure:
-            status_code: 404
-            json={
-                "error": "用户未登录"
-            }
-        failure:
-            status_code: 404
-            json={
-                "error": "图片未审查"
-            }
-        """
-        user = request.user
-        image_id = request.POST.get("image-id")
-        if image_id:
-            image = ImageModel.objects.get(id=image_id)
-            if not image.if_active:
-                response = AltHttpResponse(json.dumps({"error": "图片未审查"}))
-                response.status_code = 404
-                return response
-            if Collection.objects.filter(user=user, image=image):
-                return AltHttpResponse(json.dumps({"status": "已收藏"}))
-            image.collection_nums += 1
-            image_user = image.user
-            image_user.collection_nums += 1
-            image_user.save()
-            image.save()
-            collect = Collection(user=user, image=image)
-            collect.save()
-            return AltHttpResponse(json.dumps({"status": "true"}))
-        else:
-            response = AltHttpResponse(json.dumps({"error": "参数错误"}))
-            response.status_code = 400
-            return response
-
-    @is_login
-    def delete(self, request):
-        """取消收藏
-        url:
-            /image/collect
-        method:
-            DELETE
-        params:
-            *:num (url)
-        success:
-            status_code: 200
-            json={
-                "status": "true"
-            }
-        failure:
-            status_code: 400
-            json={
-                "error": "参数错误"
-            }
-        """
-        user = request.user
-        put = QueryDict(request.body)
-        image_id = put.get("image-id")
-        image = ImageModel.objects.get(id=image_id)
-        image.collection_nums -= 1
-        image.save()
-        Collection.objects.filter(user=user, image=image)[0].delete()
         return AltHttpResponse(json.dumps({"status": "true"}))
 
 
@@ -894,7 +738,7 @@ class Download(View):
         }
         image.download_nums += 1
         image.save()
-        image_user = image.user 
+        image_user = image.user
         image_user.download_nums += 1
         image_user.save()
         return AltHttpResponse(json.dumps(data))
@@ -960,7 +804,7 @@ class GetImage(View):
         user = request.user
         if LikeShip.objects.filter(user=user, image=image):
             like = 'true'
-        if Collection.objects.filter(user=user, image=image):
+        if ImageFolder.objects.filter(user=user, image=image):
             collect = 'true'
         if Follow.objects.filter(fan=user, follow=image.user):
             follow = 'true'
@@ -1039,6 +883,8 @@ class ImageFolder(View):
         folder = Folder.objects.get(id=int(folder_id))
         if request.user.id != folder.user.id:
             response = AltHttpResponse(json.dumps({"error": "不能查看其他用户收藏"}))
+            response.status_code = 404
+            return response
         ships = FolderImage.objects.filter(folder=folder)
         datas = []
         for ship in ships:
@@ -1108,9 +954,9 @@ class ImageFolder(View):
             response = AltHttpResponse(json.dumps({"error": "不能修改其他用户收藏"}))
             response.status_code = 404
             return response
-        image = ImageModel(id=int(image_id))
+        image = ImageModel.objects.get(id=int(image_id))
         if FolderImage.objects.filter(folder=folder, image=image):
-                return AltHttpResponse(json.dumps({"status": "已收藏"}))
+            return AltHttpResponse(json.dumps({"status": "已收藏"}))
         FolderImage(image=image, folder=folder).save()
         folder.nums += 1
         folder.save()
@@ -1151,8 +997,8 @@ class ImageFolder(View):
                 "error": "不能修改其他用户收藏"
             }
         """
-        folder_id = request.POST.get('id')
-        image_id = request.POST.get('image-id')
+        folder_id = request.GET.get('id')
+        image_id = request.GET.get('image-id')
         if not folder_id or not image_id:
             response = AltHttpResponse(json.dumps({"error": "参数错误"}))
             response.status_code = 400
@@ -1283,7 +1129,8 @@ class ImageComment(View):
             reply_user = UserProfile.objects.get(id=int(user_id))
             comment.reply = reply_user
             # 保存新的用户信息
-            UserMessage(post_user=request.user.username, user=reply_user, message=content).save()
+            UserMessage(post_user=request.user.username,
+                        user=reply_user, message=content).save()
         comment.save()
         return AltHttpResponse(json.dumps({"status": "true"}))
 
@@ -1317,7 +1164,7 @@ class ImageComment(View):
                 "error": "用户未登录"
             }
         """
-        put_get = QueryDict(request.body).get
+        put_get = request.GET.get
         comment_id = put_get('id')
         if not comment_id:
             response = AltHttpResponse(json.dumps({"error": "参数错误"}))
