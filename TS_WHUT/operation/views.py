@@ -16,7 +16,7 @@ class ResetView(View):
     def post(self, request):
         """修改密码
         url:
-            /reset/
+            /user/reset/
         method:
             POST
         params:

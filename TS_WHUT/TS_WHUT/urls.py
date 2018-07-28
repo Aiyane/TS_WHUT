@@ -44,6 +44,7 @@ urlpatterns = [
     path('user/folder/image/', ImageIdFolder.as_view(), name="image_id_folder"),
     path('user/comment/like/', UserCommentLike.as_view(), name="comment_like"),
     path('user/signed/', SignedUser.as_view(), name="signed"),
+    path('user/reset/', ResetView.as_view(), name="reset"),
 
 
     path('image/', ImageView.as_view(), name="image"),
@@ -58,7 +59,6 @@ urlpatterns = [
     path('image/comment/', ImageComment.as_view(), name="image_comment"),
 
     path('active/<str:active_code>/', ActiveUserView.as_view(), name="user_active"),
-    path('reset/', ResetView.as_view(), name="reset"),
     path('cates/', CatesView.as_view(), name="cates"),
     path('message/', GetMsg.as_view(), name="get_message"),
     path('search/', include('haystack.urls'), name='search'),  # 检索
