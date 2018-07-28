@@ -406,6 +406,11 @@ failure:
     json={
         "error": "参数错误"
     }
+failure:
+    status_code: 400
+    json={
+        "error": "不能关注自己"
+    }
 ```
 ### 取消关注
 ```

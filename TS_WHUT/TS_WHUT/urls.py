@@ -22,7 +22,7 @@ from operation.views import ActiveUserView, CatesView, GetMsg, DownloadRank, Col
 from Users.views import (RegisterView, LoginView, GetUserMsgView, UserDownload, UserUpload, UserCommentLike,
                          LogoutView, History, FollowView, IsLogin, Following, FollowNum, FanNum, UserFolder,
                          ImageIdFolder, SignedUser)
-from Images.views import (ImageView, ImageCateView, Download, GetImage, ImageFolder,
+from Images.views import (ImageView, ImageCateView, Download, GetImage, GetImageFolder,
                           ImagePattern, ImageUser, ImageLike, Banner, ImageComment)
 
 urlpatterns = [
@@ -55,7 +55,7 @@ urlpatterns = [
     path('image/banner/', Banner.as_view(), name="Banner"),
     path('image/download/', Download.as_view(), name="download"),
     path('image/id/', GetImage.as_view(), name="get_image"),
-    path('image/folder/', ImageFolder.as_view(), name="image_folder"),
+    path('image/folder/', GetImageFolder.as_view(), name="image_folder"),
     path('image/comment/', ImageComment.as_view(), name="image_comment"),
 
     path('active/<str:active_code>/', ActiveUserView.as_view(), name="user_active"),

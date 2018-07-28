@@ -162,41 +162,38 @@ class ImageView(View):
         contacts = images[start: start+num]
         datas = []
         if contacts:
-            try:
-                for image in contacts:
-                    user_url = image.user.image.url
-                    like = 'false'
-                    collect = 'false'
-                    follow = 'false'
-                    user = request.user
-                    if LikeShip.objects.filter(user=user, image=image):
-                        like = 'true'
-                    if ImageFolder.objects.filter(user=user, image=image):
-                        collectll = 'true'
-                    if Follow.objects.filter(fan=user, follow=image.user):
-                        follow = 'true'
-                    data = {
-                        "id": image.id,
-                        "image": image.image['avatar'].url,  # 缩略图
-                        "desc": image.desc,
-                        "user": image.user.username,
-                        "user_image": user_url,
-                        "user_id": image.user.id,
-                        "pattern": image.pattern,
-                        "like": image.like_nums,
-                        "cates": image.cates,
-                        "collection": image.collection_nums,
-                        "height": image.image.height,
-                        "width": image.image.width,
-                        "download_nums": image.download_nums,
-                        "name": image.name,
-                        "if_like": like,
-                        "if_collect": collect,
-                        "if_follow": follow,
-                    }
-                    datas.append(data)
-            except:
-                pass
+            for image in contacts:
+                user_url = image.user.image.url
+                like = 'false'
+                collect = 'false'
+                follow = 'false'
+                user = request.user
+                if LikeShip.objects.filter(user=user, image=image):
+                    like = 'true'
+                if FolderImage.objects.filter(user=user, image=image):
+                    collectll = 'true'
+                if Follow.objects.filter(fan=user, follow=image.user):
+                    follow = 'true'
+                data = {
+                    "id": image.id,
+                    "image": image.image['avatar'].url,  # 缩略图
+                    "desc": image.desc,
+                    "user": image.user.username,
+                    "user_image": user_url,
+                    "user_id": image.user.id,
+                    "pattern": image.pattern,
+                    "like": image.like_nums,
+                    "cates": image.cates,
+                    "collection": image.collection_nums,
+                    "height": image.image.height,
+                    "width": image.image.width,
+                    "download_nums": image.download_nums,
+                    "name": image.name,
+                    "if_like": like,
+                    "if_collect": collect,
+                    "if_follow": follow,
+                }
+                datas.append(data)
         return AltHttpResponse(json.dumps(datas))
 
 
@@ -263,7 +260,7 @@ class ImageCateView(View):
                     user = request.user
                     if LikeShip.objects.filter(user=user, image=image):
                         like = 'true'
-                    if ImageFolder.objects.filter(user=user, image=image):
+                    if FolderImage.objects.filter(user=user, image=image):
                         collectll = 'true'
                     if Follow.objects.filter(fan=user, follow=image.user):
                         follow = 'true'
@@ -355,7 +352,7 @@ class ImagePattern(View):
                     user = request.user
                     if LikeShip.objects.filter(user=user, image=image):
                         like = 'true'
-                    if ImageFolder.objects.filter(user=user, image=image):
+                    if FolderImage.objects.filter(user=user, image=image):
                         collectll = 'true'
                     if Follow.objects.filter(fan=user, follow=image.user):
                         follow = 'true'
@@ -446,7 +443,7 @@ class ImageUser(View):
                     r_user = request.user
                     if LikeShip.objects.filter(user=r_user, image=image):
                         like = 'true'
-                    if ImageFolder.objects.filter(user=r_user, image=image):
+                    if FolderImage.objects.filter(user=r_user, image=image):
                         collectll = 'true'
                     data = {
                         "id": image.id,
@@ -804,7 +801,7 @@ class GetImage(View):
         user = request.user
         if LikeShip.objects.filter(user=user, image=image):
             like = 'true'
-        if ImageFolder.objects.filter(user=user, image=image):
+        if FolderImage.objects.filter(user=user, image=image):
             collect = 'true'
         if Follow.objects.filter(fan=user, follow=image.user):
             follow = 'true'
@@ -830,7 +827,7 @@ class GetImage(View):
         return AltHttpResponse(json.dumps(data))
 
 
-class ImageFolder(View):
+class GetImageFolder(View):
     @is_login
     def get(self, request):
         """获得该收藏夹全部图片
@@ -957,7 +954,7 @@ class ImageFolder(View):
         image = ImageModel.objects.get(id=int(image_id))
         if FolderImage.objects.filter(folder=folder, image=image):
             return AltHttpResponse(json.dumps({"status": "已收藏"}))
-        FolderImage(image=image, folder=folder).save()
+        FolderImage(image=image, folder=folder, user=request.user).save()
         folder.nums += 1
         folder.save()
         return AltHttpResponse(json.dumps({"status": "true"}))

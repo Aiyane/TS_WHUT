@@ -649,12 +649,21 @@ class FollowView(View):
             json={
                 "error": "参数错误"
             }
+        failure:
+            status_code: 400
+            json={
+                "error": "不能关注自己"
+            }
         """
         user = request.user
         user.follow_nums += 1
         user_id = int(request.POST.get("id"))
         if user_id:
             follow = UserProfile.objects.get(id=user_id)
+            if user_id == request.user.id:
+                response = AltHttpResponse(json.dumps({"error": "不能关注自己"}))
+                response.status_code = 400
+                return response
             if Follow.objects.filter(fan=user, follow=follow):
                 return AltHttpResponse(json.dumps({"status": "已关注"}))
             follow.fan_nums += 1
